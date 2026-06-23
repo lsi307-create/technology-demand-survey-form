@@ -1,6 +1,7 @@
 const SHEET_URL = 'https://docs.google.com/spreadsheets/d/1d4beTVvbY3y-I8OvuNd8IF42wApwvkAXCdLv5LEfzaE/edit?gid=0#gid=0';
 
 const DEMAND_TYPES = [
+  '미정',
   '신규 R&D 과제',
   '현장 실증/시범사업',
   '기존 기술 고도화',
@@ -205,15 +206,42 @@ const GUIDEBOOKS = RAW_GUIDEBOOK_TEXT
   .split(/\n(?=□ 분야 \d\.)/)
   .map(parseGuidebookSection);
 
-const CATEGORIES = [...GUIDEBOOKS.map((guide) => guide.category), '기타'];
+const CATEGORY_META = [
+  {
+    category: '분야 1. 도로교통운영 및 효율',
+    subcategories: ['AI 영상분석', '스마트교차로', '긴급차량 우선신호', '통합관제', '기타'],
+  },
+  {
+    category: '분야 2. 도로교통안전 및 재난',
+    subcategories: ['침수·범람 감지', '블랙아이스 검지', '재난 예·경보', 'AI 기반 재난관제', '기타'],
+  },
+  {
+    category: '분야 3. 생활밀착형 교통서비스_민생교통',
+    subcategories: ['공영주차 및 주차정보 연계', '불법주정차 관리', 'DRT', '교통약자 이동지원', '기타'],
+  },
+  {
+    category: '분야 4. 모빌리티',
+    guideCategory: '분야 4. 미래 모빌리티',
+    subcategories: ['자율주행·C-ITS', 'V2X', '디지털트윈 기반 교통운영', '기타'],
+  },
+  {
+    category: '기타',
+    subcategories: ['기타'],
+  },
+];
+
+const CATEGORIES = CATEGORY_META.map((item) => item.category);
+const SUBCATEGORIES = Object.fromEntries(CATEGORY_META.map((item) => [item.category, item.subcategories]));
 
 const URGENCY = [
+  '미정',
   '상: 2026년 즉시 추진 필요',
   '중: 1~2년 내 추진 필요',
   '하: 중장기 검토 가능',
 ];
 
 const READINESS = [
+  '미정',
   '아이디어 단계',
   '현장 문제 확인',
   '기술/솔루션 탐색 중',
@@ -241,13 +269,26 @@ function input(name, label, placeholder = '', type = 'text', required = true) {
   `;
 }
 
-function select(name, label, values, required = true) {
+function select(name, label, values, required = true, selectedValue = '') {
   return `
     <label class="field">
       <span>${label}${required ? '<b>*</b>' : ''}</span>
       <select name="${name}" ${required ? 'required' : ''}>
         <option value="">선택해 주세요</option>
-        ${values.map((value) => `<option>${value}</option>`).join('')}
+        ${values.map((value) => `<option ${value === selectedValue ? 'selected' : ''}>${value}</option>`).join('')}
+      </select>
+    </label>
+  `;
+}
+
+function subcategorySelect(index, category = '', selectedValue = '') {
+  const values = SUBCATEGORIES[category] || [];
+  return `
+    <label class="field">
+      <span>소분류<b>*</b></span>
+      <select name="subcategory-${index}" required ${values.length ? '' : 'disabled'}>
+        <option value="">${values.length ? '대분류에 따른 아이템을 선택해 주세요' : '대분류를 먼저 선택해 주세요'}</option>
+        ${values.map((value) => `<option ${value === selectedValue ? 'selected' : ''}>${value}</option>`).join('')}
       </select>
     </label>
   `;
@@ -376,6 +417,14 @@ function renderGuidebook() {
         <div class="process-grid">
           ${PROCESS_STEPS.map(renderProcessStep).join('')}
         </div>
+        <div class="major-field-list">
+          ${CATEGORY_META.filter((item) => item.category !== '기타').map((item) => `
+            <article>
+              <strong>${escapeHtml(item.category)}</strong>
+              <p>${item.subcategories.filter((value) => value !== '기타').map(escapeHtml).join(', ')}</p>
+            </article>
+          `).join('')}
+        </div>
       </section>
       <div class="guide-nav">
         <button type="button" class="secondary guide-arrow" id="guidePrev" aria-label="이전 가이드">‹</button>
@@ -427,6 +476,35 @@ function setValue(form, name, value) {
   if (element) element.value = value || '';
 }
 
+function normalizeCategory(category) {
+  return CATEGORY_META.find((item) => item.guideCategory === category)?.category || category;
+}
+
+function inferSubcategory(guide) {
+  const category = normalizeCategory(guide.category);
+  const values = SUBCATEGORIES[category] || [];
+  const haystack = [
+    guide.subtitle,
+    guide.draft.title,
+    guide.draft.solution,
+    guide.draft.data,
+  ].join(' ');
+  return values.find((value) => value !== '기타' && haystack.includes(value)) || values[0] || '기타';
+}
+
+function updateSubcategoryOptions(index, category, selectedValue = '') {
+  const form = document.querySelector('#survey');
+  const element = fieldByName(form, `subcategory-${index}`);
+  if (!element) return;
+
+  const values = SUBCATEGORIES[category] || [];
+  element.disabled = values.length === 0;
+  element.innerHTML = `
+    <option value="">${values.length ? '대분류에 따른 아이템을 선택해 주세요' : '대분류를 먼저 선택해 주세요'}</option>
+    ${values.map((value) => `<option ${value === selectedValue ? 'selected' : ''}>${value}</option>`).join('')}
+  `;
+}
+
 function exampleText(value) {
   if (!value) return '';
   return value.startsWith('(작성 예시)') ? value : `(작성 예시) ${value}`;
@@ -439,10 +517,13 @@ function applyGuideToDemand(guide) {
   const card = document.querySelector('.demand-card');
   const index = card.dataset.index;
   const draft = guide.draft;
+  const category = normalizeCategory(guide.category);
+  const subcategory = inferSubcategory(guide);
 
   setValue(form, `title-${index}`, exampleText(draft.title));
   setValue(form, `type-${index}`, draft.type);
-  setValue(form, `category-${index}`, guide.category);
+  setValue(form, `category-${index}`, category);
+  updateSubcategoryOptions(index, category, subcategory);
   setValue(form, `urgency-${index}`, draft.urgency);
   setValue(form, `site-${index}`, exampleText(draft.site));
   setValue(form, `readiness-${index}`, draft.readiness);
@@ -455,7 +536,7 @@ function applyGuideToDemand(guide) {
   card.querySelector('.source-note')?.remove();
   card.querySelector('.demand-top').insertAdjacentHTML(
     'beforeend',
-    `<p class="source-note">${escapeHtml(guide.title)} (작성 예시) 반영됨 - 기관/단체 현안에 맞게 수정해 주세요.</p>`,
+    `<p class="source-note">${escapeHtml(category)} / ${escapeHtml(subcategory)} (작성 예시) 반영됨 - 기관/단체 현안에 맞게 수정해 주세요.</p>`,
   );
   show('(작성 예시)가 입력되었습니다. 기관/단체별 실제 현안에 맞게 수정해 주세요.', true);
   document.querySelector('#survey').scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -488,11 +569,12 @@ function addDemand() {
 
     <div class="grid two">
       ${input(`title-${index}`, '기술수요명', '예: V2X 기반 교차로 위험정보 실시간 연계 서비스')}
-      ${select(`type-${index}`, '수요 유형', DEMAND_TYPES)}
-      ${select(`category-${index}`, '분야', CATEGORIES)}
-      ${select(`urgency-${index}`, '추진 시급성', URGENCY)}
-      ${input(`site-${index}`, '적용 대상/현장', '예: 도심 자율주행 시범지구, 주요 교차로, C-ITS 구축 구간')}
-      ${select(`readiness-${index}`, '검토 단계', READINESS)}
+      ${select(`category-${index}`, '대분류', CATEGORIES)}
+      ${subcategorySelect(index)}
+      ${input(`site-${index}`, '적용 대상/현장', '예: 주요 교차로, 지하차도, 공영주차장, 자율주행 시범지구')}
+      ${select(`type-${index}`, '수요 유형', DEMAND_TYPES, false, '미정')}
+      ${select(`urgency-${index}`, '추진 시급성', URGENCY, false, '미정')}
+      ${select(`readiness-${index}`, '검토 단계', READINESS, false, '미정')}
     </div>
 
     ${textarea(`background-${index}`, '추진 배경', '관련 국정과제, 정부 보도자료, 지자체 정책, 현장 여건 등 수요가 나온 배경을 적어 주세요.', true)}
@@ -506,6 +588,9 @@ function addDemand() {
 
   section.querySelector('.remove').addEventListener('click', () => {
     if (document.querySelectorAll('.demand-card').length > 1) section.remove();
+  });
+  section.querySelector(`[name="category-${index}"]`).addEventListener('change', (event) => {
+    updateSubcategoryOptions(index, event.target.value);
   });
 
   document.querySelector('#demands').append(section);
@@ -530,6 +615,7 @@ function collect() {
         title: formValue(form, `title-${i}`),
         type: formValue(form, `type-${i}`),
         category: formValue(form, `category-${i}`),
+        subcategory: formValue(form, `subcategory-${i}`),
         urgency: formValue(form, `urgency-${i}`),
         site: formValue(form, `site-${i}`),
         readiness: formValue(form, `readiness-${i}`),
@@ -569,11 +655,9 @@ async function submit(event) {
   const payload = collect();
   const invalid = payload.demands.findIndex((demand) => (
     !demand.title ||
-    !demand.type ||
     !demand.category ||
-    !demand.urgency ||
+    !demand.subcategory ||
     !demand.site ||
-    !demand.background ||
     !demand.problem ||
     !demand.solution ||
     !demand.expected
@@ -627,7 +711,8 @@ function exportCsv() {
     이메일: payload.email,
     기술수요명: demand.title,
     수요유형: demand.type,
-    분야: demand.category,
+    대분류: demand.category,
+    소분류: demand.subcategory,
     추진시급성: demand.urgency,
     적용대상현장: demand.site,
     검토단계: demand.readiness,

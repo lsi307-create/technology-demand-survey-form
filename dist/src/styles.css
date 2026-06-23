@@ -27,6 +27,10 @@ h1 { margin: 22px 0 14px; font-size: clamp(30px, 4vw, 42px); line-height: 1.16; 
 .process-card span { position: absolute; left: 18px; top: 18px; display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; background: #0f766e; color: white; font-size: 14px; font-weight: 900; }
 .process-card h3 { margin: 0 0 10px; color: #0f3565; font-size: 17px; line-height: 1.35; }
 .process-card ul { margin: 0; padding-left: 18px; color: #24344a; line-height: 1.6; font-size: 14px; font-weight: 800; }
+.major-field-list { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.major-field-list article { padding: 14px 16px; border: 1px solid #d2e3ef; border-radius: 16px; background: white; }
+.major-field-list strong { display: block; margin-bottom: 6px; color: #0f3565; font-size: 15px; }
+.major-field-list p { color: #4f6175; font-size: 13px; line-height: 1.5; }
 .guide-nav { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-bottom: 4px; }
 .guide-nav > div { text-align: center; }
 .guide-nav strong { color: #0f3565; font-size: 18px; }
@@ -106,4 +110,4 @@ button:disabled { opacity: .55; cursor: progress; }
 .actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 26px; }
 .actions button { min-width: 118px; }
 @media (max-width: 900px) { .survey-meta { grid-template-columns: repeat(2, minmax(0, 1fr)); } .guide-overview { grid-template-columns: 1fr; } }
-@media (max-width: 760px) { .page { padding: 10px 10px 48px; } .hero, .card, .guidebook { padding: 24px; border-radius: 18px; } .survey-meta { grid-template-columns: 1fr; padding: 14px; border-radius: 20px; } .survey-meta div { min-height: auto; } .process-grid, .guidebook-head, .section-title, .demand-top { align-items: flex-start; flex-wrap: wrap; grid-template-columns: 1fr; } .guidebook-head .secondary, .guide-actions { width: 100%; flex-basis: 100%; } .guide-panel dl, .grid.two, .guide-effects { grid-template-columns: 1fr; } .source-note { order: 3; width: 100%; margin: 10px 0 0; text-align: center; } .demands-head .secondary { margin-left: 0; width: 100%; } .actions > * { width: 100%; } }
+@media (max-width: 760px) { .page { padding: 10px 10px 48px; } .hero, .card, .guidebook { padding: 24px; border-radius: 18px; } .survey-meta { grid-template-columns: 1fr; padding: 14px; border-radius: 20px; } .survey-meta div { min-height: auto; } .process-grid, .major-field-list, .guidebook-head, .section-title, .demand-top { align-items: flex-start; flex-wrap: wrap; grid-template-columns: 1fr; } .guidebook-head .secondary, .guide-actions { width: 100%; flex-basis: 100%; } .guide-panel dl, .grid.two, .guide-effects { grid-template-columns: 1fr; } .source-note { order: 3; width: 100%; margin: 10px 0 0; text-align: center; } .demands-head .secondary { margin-left: 0; width: 100%; } .actions > * { width: 100%; } }
