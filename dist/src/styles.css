@@ -30,13 +30,13 @@ h1 { margin: 22px 0 14px; font-size: clamp(30px, 4vw, 42px); line-height: 1.16; 
 .field-reference { margin: -6px 0 20px; padding: 18px; border: 1px solid #dce6ef; border-radius: 18px; background: #f8fbfe; }
 .field-reference h3 { margin: 4px 0 14px; color: #0f3565; font-size: 18px; line-height: 1.4; }
 .major-field-list { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-.major-field-list article { padding: 14px 16px; border: 1px solid #d2e3ef; border-radius: 16px; background: white; }
-.major-field-list strong { display: block; margin-bottom: 6px; color: #0f3565; font-size: 15px; }
+.major-field-list article { position: relative; padding: 14px 16px; border: 1px solid #d2e3ef; border-radius: 16px; background: white; }
+.major-field-list strong { display: block; margin-bottom: 6px; padding-right: 126px; color: #0f3565; font-size: 15px; }
 .major-field-list p { margin: 0; color: #4f6175; font-size: 13px; line-height: 1.5; }
 .field-meta { display: grid; gap: 6px; margin-top: 10px; padding-top: 10px; border-top: 1px solid #e0e8f0; }
 .field-meta span { display: block; color: #5b6f86; font-size: 12px; line-height: 1.45; font-weight: 800; }
 .field-meta b { display: inline-block; margin-right: 6px; color: #0f766e; }
-.field-draft-button { width: 100%; min-height: 40px; margin-top: 12px; padding: 10px 12px; border: 1px solid #bfe3d9; border-radius: 12px; background: #eef8f5; color: #173f3a; font-size: 13px; }
+.field-draft-button { position: absolute; top: 12px; right: 12px; min-height: 30px; padding: 6px 10px; border: 1px solid #bfe3d9; border-radius: 10px; background: #eef8f5; color: #173f3a; font-size: 12px; }
 .guide-nav { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-bottom: 4px; }
 .guide-nav > div { text-align: center; }
 .guide-nav strong { color: #0f3565; font-size: 18px; }
@@ -116,4 +116,4 @@ button:disabled { opacity: .55; cursor: progress; }
 .actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 26px; }
 .actions button { min-width: 118px; }
 @media (max-width: 900px) { .survey-meta { grid-template-columns: repeat(2, minmax(0, 1fr)); } .guide-overview { grid-template-columns: 1fr; } }
-@media (max-width: 760px) { .page { padding: 10px 10px 48px; } .hero, .card, .guidebook { padding: 24px; border-radius: 18px; } .survey-meta { grid-template-columns: 1fr; padding: 14px; border-radius: 20px; } .survey-meta div { min-height: auto; } .process-grid, .major-field-list, .guidebook-head, .section-title, .demand-top { align-items: flex-start; flex-wrap: wrap; grid-template-columns: 1fr; } .guidebook-head .secondary, .guide-actions { width: 100%; flex-basis: 100%; } .guide-panel dl, .grid.two, .guide-effects { grid-template-columns: 1fr; } .source-note { order: 3; width: 100%; margin: 10px 0 0; text-align: center; } .demands-head .secondary { margin-left: 0; width: 100%; } .actions > * { width: 100%; } }
+@media (max-width: 760px) { .page { padding: 10px 10px 48px; } .hero, .card, .guidebook { padding: 24px; border-radius: 18px; } .survey-meta { grid-template-columns: 1fr; padding: 14px; border-radius: 20px; } .survey-meta div { min-height: auto; } .process-grid, .major-field-list, .guidebook-head, .section-title, .demand-top { align-items: flex-start; flex-wrap: wrap; grid-template-columns: 1fr; } .major-field-list strong { padding-right: 0; } .field-draft-button { position: static; margin-top: 10px; } .guidebook-head .secondary, .guide-actions { width: 100%; flex-basis: 100%; } .guide-panel dl, .grid.two, .guide-effects { grid-template-columns: 1fr; } .source-note { order: 3; width: 100%; margin: 10px 0 0; text-align: center; } .demands-head .secondary { margin-left: 0; width: 100%; } .actions > * { width: 100%; } }
