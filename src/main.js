@@ -443,10 +443,17 @@ function renderFieldReference() {
             <span><b>관련 ITS 2030:</b> ${item.itsTasks.map(escapeHtml).join(', ')}</span>
             <span><b>분류 키워드:</b> ${escapeHtml(item.keywords)}</span>
           </div>
+          <button type="button" class="field-draft-button" data-field-draft="${escapeHtml(item.category)}">
+            이 분야 수요 초안 선택
+          </button>
         </article>
       `).join('')}
     </div>
   `;
+
+  reference.querySelectorAll('[data-field-draft]').forEach((button) => {
+    button.addEventListener('click', () => applyFieldDraft(button.dataset.fieldDraft));
+  });
 }
 
 function fieldByName(form, name) {
@@ -460,6 +467,10 @@ function setValue(form, name, value) {
 
 function normalizeCategory(category) {
   return CATEGORY_META.find((item) => item.guideCategory === category)?.category || category;
+}
+
+function guideForCategory(category) {
+  return GUIDEBOOKS.find((guide) => normalizeCategory(guide.category) === category);
 }
 
 function inferSubcategory(guide) {
@@ -533,6 +544,15 @@ function applyGuideChoice(inputEl) {
 
   const guide = GUIDEBOOKS.find((item) => item.id === inputEl.dataset.guideApply);
   if (guide) applyGuideToDemand(guide);
+}
+
+function applyFieldDraft(category) {
+  const guide = guideForCategory(category);
+  if (!guide) return;
+  document.querySelectorAll('[data-guide-apply]').forEach((checkbox) => {
+    checkbox.checked = checkbox.dataset.guideApply === guide.id;
+  });
+  applyGuideToDemand(guide);
 }
 
 function addDemand() {

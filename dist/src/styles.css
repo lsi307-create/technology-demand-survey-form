@@ -36,6 +36,7 @@ h1 { margin: 22px 0 14px; font-size: clamp(30px, 4vw, 42px); line-height: 1.16; 
 .field-meta { display: grid; gap: 6px; margin-top: 10px; padding-top: 10px; border-top: 1px solid #e0e8f0; }
 .field-meta span { display: block; color: #5b6f86; font-size: 12px; line-height: 1.45; font-weight: 800; }
 .field-meta b { display: inline-block; margin-right: 6px; color: #0f766e; }
+.field-draft-button { width: 100%; min-height: 40px; margin-top: 12px; padding: 10px 12px; border: 1px solid #bfe3d9; border-radius: 12px; background: #eef8f5; color: #173f3a; font-size: 13px; }
 .guide-nav { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-bottom: 4px; }
 .guide-nav > div { text-align: center; }
 .guide-nav strong { color: #0f3565; font-size: 18px; }
