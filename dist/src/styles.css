@@ -27,6 +27,8 @@ h1 { margin: 22px 0 14px; font-size: clamp(30px, 4vw, 42px); line-height: 1.16; 
 .process-card span { position: absolute; left: 18px; top: 18px; display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; background: #0f766e; color: white; font-size: 14px; font-weight: 900; }
 .process-card h3 { margin: 0 0 10px; color: #0f3565; font-size: 17px; line-height: 1.35; }
 .process-card ul { margin: 0; padding-left: 18px; color: #24344a; line-height: 1.6; font-size: 14px; font-weight: 800; }
+.field-reference { margin: -6px 0 20px; padding: 18px; border: 1px solid #dce6ef; border-radius: 18px; background: #f8fbfe; }
+.field-reference h3 { margin: 4px 0 14px; color: #0f3565; font-size: 18px; line-height: 1.4; }
 .major-field-list { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 .major-field-list article { padding: 14px 16px; border: 1px solid #d2e3ef; border-radius: 16px; background: white; }
 .major-field-list strong { display: block; margin-bottom: 6px; color: #0f3565; font-size: 15px; }

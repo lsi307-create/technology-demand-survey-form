@@ -10,24 +10,6 @@ const DEMAND_TYPES = [
   '제도/표준/가이드 개선',
 ];
 
-const PROCESS_STEPS = [
-  {
-    title: '1단계. 기술수요조사',
-    items: [
-      '기술수요조사 실시',
-      '지자체협의체 운영',
-      '기술수요 기반 지자체협의체 연계 도슨트투어',
-    ],
-  },
-  {
-    title: '2단계. 현장 참여 연계 프로그램',
-    items: [
-      '공공기관·유관기관 초청 도슨트투어',
-      '인재양성실(도로교통공단 위탁교육) 연계 도슨트투어',
-    ],
-  },
-];
-
 const RAW_GUIDEBOOK_TEXT = `□ 분야 1. 도로교통운영 및 효율
 (AI 영상분석, 스마트교차로, 긴급차량 우선신호, 통합관제 등 교통운영 효율화 및 생활권 안전 강화를 위한 기술) 
  ㅇ 추진현황(국정과제 및 정부 보도자료)
@@ -313,18 +295,6 @@ function escapeHtml(value) {
   })[char]);
 }
 
-function renderProcessStep(step, index) {
-  return `
-    <article class="process-card">
-      <span>${index + 1}</span>
-      <h3>${escapeHtml(step.title)}</h3>
-      <ul>
-        ${step.items.map((item) => `<li>${escapeHtml(item)}</li>`).join('')}
-      </ul>
-    </article>
-  `;
-}
-
 function renderGuideCard(guide, index) {
   return `
     <article class="guide-slide" data-guide-index="${index}" aria-label="${escapeHtml(guide.title)}">
@@ -408,24 +378,6 @@ function renderGuidebook() {
   const guidebook = document.querySelector('#guidebook');
   guidebook.innerHTML = `
     <div class="guide-shell">
-      <section class="guide-overview">
-        <div>
-          <p class="guide-label">작성 참고 가이드북</p>
-          <h2>주요분야(안)</h2>
-          <p>아래 4개 분야를 기준으로 기관/단체별 현안 및 기술수요를 작성해 주시기 바랍니다.</p>
-        </div>
-        <div class="process-grid">
-          ${PROCESS_STEPS.map(renderProcessStep).join('')}
-        </div>
-        <div class="major-field-list">
-          ${CATEGORY_META.filter((item) => item.category !== '기타').map((item) => `
-            <article>
-              <strong>${escapeHtml(item.category)}</strong>
-              <p>${item.subcategories.filter((value) => value !== '기타').map(escapeHtml).join(', ')}</p>
-            </article>
-          `).join('')}
-        </div>
-      </section>
       <div class="guide-nav">
         <button type="button" class="secondary guide-arrow" id="guidePrev" aria-label="이전 가이드">‹</button>
         <div>
@@ -465,6 +417,24 @@ function renderGuidebook() {
   });
 
   updateGuidebook();
+}
+
+function renderFieldReference() {
+  const reference = document.querySelector('#fieldReference');
+  reference.innerHTML = `
+    <div>
+      <p class="guide-label">주요분야(안)</p>
+      <h3>대분류와 소분류를 확인한 뒤 기술수요를 작성해 주세요.</h3>
+    </div>
+    <div class="major-field-list">
+      ${CATEGORY_META.filter((item) => item.category !== '기타').map((item) => `
+        <article>
+          <strong>${escapeHtml(item.category)}</strong>
+          <p>${item.subcategories.filter((value) => value !== '기타').map(escapeHtml).join(', ')}</p>
+        </article>
+      `).join('')}
+    </div>
+  `;
 }
 
 function fieldByName(form, name) {
@@ -741,6 +711,7 @@ function exportCsv() {
 
 document.querySelector('#orgFields').innerHTML = orgFields.map((field) => input(...field)).join('');
 renderGuidebook();
+renderFieldReference();
 document.querySelector('#addDemand').addEventListener('click', addDemand);
 document.querySelector('#survey').addEventListener('submit', submit);
 document.querySelector('#saveDraft').addEventListener('click', saveDraft);
