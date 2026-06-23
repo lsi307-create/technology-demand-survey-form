@@ -205,7 +205,7 @@ const GUIDEBOOKS = RAW_GUIDEBOOK_TEXT
   .split(/\n(?=□ 분야 \d\.)/)
   .map(parseGuidebookSection);
 
-const CATEGORIES = GUIDEBOOKS.map((guide) => guide.category);
+const CATEGORIES = [...GUIDEBOOKS.map((guide) => guide.category), '기타'];
 
 const URGENCY = [
   '상: 2026년 즉시 추진 필요',
@@ -222,7 +222,7 @@ const READINESS = [
 ];
 
 const orgFields = [
-  ['org', '기관명', '예: OO시청, OO공사', 'text'],
+  ['org', '기관/단체명', '예: OO시청, OO공사, OO협회', 'text'],
   ['department', '부서명', '예: 교통정책과, 스마트도시과', 'text'],
   ['writer', '담당자명', '', 'text'],
   ['position', '직위', '', 'text', false],
@@ -335,7 +335,7 @@ function renderGuideCard(guide, index) {
           `).join('')}
         </section>
       </div>
-      <p class="example-note">(작성 예시) 체크 시 아래 설문에 참고용 초안이 입력됩니다. 기관별 실제 현안, 적용 현장, 보유 데이터, 기대효과에 맞게 수정해 주세요.</p>
+      <p class="example-note">(작성 예시) 체크 시 아래 설문에 참고용 초안이 입력됩니다. 기관/단체별 실제 현안, 적용 현장, 보유 데이터, 기대효과에 맞게 수정해 주세요.</p>
     </article>
   `;
 }
@@ -371,7 +371,7 @@ function renderGuidebook() {
         <div>
           <p class="guide-label">작성 참고 가이드북</p>
           <h2>주요분야(안)</h2>
-          <p>아래 4개 분야를 기준으로 기관별 현안 및 기술수요를 작성해 주시기 바랍니다.</p>
+          <p>아래 4개 분야를 기준으로 기관/단체별 현안 및 기술수요를 작성해 주시기 바랍니다.</p>
         </div>
         <div class="process-grid">
           ${PROCESS_STEPS.map(renderProcessStep).join('')}
@@ -446,18 +446,18 @@ function applyGuideToDemand(guide) {
   setValue(form, `urgency-${index}`, draft.urgency);
   setValue(form, `site-${index}`, exampleText(draft.site));
   setValue(form, `readiness-${index}`, draft.readiness);
-  setValue(form, `background-${index}`, `${exampleText(draft.background)}\n\n기관의 실제 추진 배경에 맞게 수정해 주세요.`);
-  setValue(form, `problem-${index}`, `${exampleText(draft.problem)}\n\n기관의 실제 현장 문제와 애로사항에 맞게 수정해 주세요.`);
-  setValue(form, `solution-${index}`, `${exampleText(draft.solution)}\n\n기관에서 필요로 하는 기술·서비스 내용에 맞게 수정해 주세요.`);
-  setValue(form, `data-${index}`, `${exampleText(draft.data)}\n\n기관이 보유하거나 연계 가능한 자료에 맞게 수정해 주세요.`);
-  setValue(form, `expected-${index}`, `${exampleText(draft.expected)}\n\n기관의 기대효과와 활용계획에 맞게 수정해 주세요.`);
+  setValue(form, `background-${index}`, `${exampleText(draft.background)}\n\n기관/단체의 실제 추진 배경에 맞게 수정해 주세요.`);
+  setValue(form, `problem-${index}`, `${exampleText(draft.problem)}\n\n기관/단체의 실제 현장 문제와 애로사항에 맞게 수정해 주세요.`);
+  setValue(form, `solution-${index}`, `${exampleText(draft.solution)}\n\n기관/단체에서 필요로 하는 기술·서비스 내용에 맞게 수정해 주세요.`);
+  setValue(form, `data-${index}`, `${exampleText(draft.data)}\n\n기관/단체가 보유하거나 연계 가능한 자료에 맞게 수정해 주세요.`);
+  setValue(form, `expected-${index}`, `${exampleText(draft.expected)}\n\n기관/단체의 기대효과와 활용계획에 맞게 수정해 주세요.`);
 
   card.querySelector('.source-note')?.remove();
   card.querySelector('.demand-top').insertAdjacentHTML(
     'beforeend',
-    `<p class="source-note">${escapeHtml(guide.title)} (작성 예시) 반영됨 - 기관 현안에 맞게 수정해 주세요.</p>`,
+    `<p class="source-note">${escapeHtml(guide.title)} (작성 예시) 반영됨 - 기관/단체 현안에 맞게 수정해 주세요.</p>`,
   );
-  show('(작성 예시)가 입력되었습니다. 기관별 실제 현안에 맞게 수정해 주세요.', true);
+  show('(작성 예시)가 입력되었습니다. 기관/단체별 실제 현안에 맞게 수정해 주세요.', true);
   document.querySelector('#survey').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
