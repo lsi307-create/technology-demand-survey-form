@@ -192,19 +192,27 @@ const CATEGORY_META = [
   {
     category: '분야 1. 도로교통운영 및 효율',
     subcategories: ['AI 영상분석', '스마트교차로', '긴급차량 우선신호', '통합관제', 'ITS 설비 원격관리', 'AI 관제센터', '도로시설 상태 모니터링', '기타'],
+    itsTasks: ['② 실시간 정보연계 및 유지관리 고도화', '③ AI 기반 지능형 센터 운영체계'],
+    keywords: '신호, 교차로, 관제, 운영, 혼잡',
   },
   {
     category: '분야 2. 도로교통안전 및 재난',
     subcategories: ['침수·범람 감지', '블랙아이스 검지', '재난 예·경보', 'AI 기반 재난관제', '낙하물·역주행 탐지', '산사태·낙석 예측', 'AI 사고검지', '기타'],
+    itsTasks: ['① AI 기반 다기능 위험상황 관리', '⑧ 스마트 교통복지 구현'],
+    keywords: '사고, 재난, 침수, 낙석, 위험, 응급',
   },
   {
     category: '분야 3. 생활밀착형 교통서비스_민생교통',
     subcategories: ['공영주차 및 주차정보 연계', '불법주정차 관리', 'DRT', '교통약자 이동지원', 'MaaS', '수요응답형 버스', '스마트 교통복지', '기타'],
+    itsTasks: ['⑦ 이용자 맞춤형 통합 모빌리티 서비스', '⑧ 스마트 교통복지 구현'],
+    keywords: 'MaaS, DRT, 교통약자, 대중교통, 이동권',
   },
   {
     category: '분야 4. 모빌리티',
     guideCategory: '분야 4. 미래 모빌리티',
     subcategories: ['자율주행·C-ITS', 'V2X', '디지털트윈 기반 교통운영', 'HD맵·공간정보', '도로 BIM', '민간 플랫폼·생성형 AI 연계', '기타'],
+    itsTasks: ['④ 첨단화된 지능형 도로 구축', '⑤ 정밀 데이터 기반 디지털 도로 운영(DX)', '⑥ 민간 혁신기술 기반 교통체계 AX'],
+    keywords: 'AI, 디지털트윈, V2X, 자율주행, C-ITS, DX, AX',
   },
   {
     category: '기타',
@@ -214,64 +222,6 @@ const CATEGORY_META = [
 
 const CATEGORIES = CATEGORY_META.map((item) => item.category);
 const SUBCATEGORIES = Object.fromEntries(CATEGORY_META.map((item) => [item.category, item.subcategories]));
-
-const ITS_2030_TASKS = [
-  {
-    task: '① AI 기반 다기능 위험상황 관리',
-    main: '도로교통안전 및 재난',
-    sub: '모빌리티',
-    items: ['블랙아이스 검지', '낙하물 탐지', '역주행 탐지', '산사태 예측', '침수 감지', 'AI 사고검지'],
-  },
-  {
-    task: '② 실시간 정보연계 및 유지관리 고도화',
-    main: '도로교통운영 및 효율',
-    sub: '도로교통안전 및 재난',
-    items: ['도로시설 상태 모니터링', '교량 모니터링', 'ITS 설비 원격관리', '디지털 유지보수'],
-  },
-  {
-    task: '③ AI 기반 지능형 센터 운영체계',
-    main: '도로교통운영 및 효율',
-    sub: '모빌리티',
-    items: ['AI 관제센터', 'AI 상황판단', 'AI 이벤트 분류', '생성형 AI 관제'],
-  },
-  {
-    task: '④ 첨단화된 지능형 도로 구축',
-    main: '모빌리티',
-    sub: '도로교통운영 및 효율',
-    items: ['C-ITS', 'RSU', 'V2X', '스마트교차로', '디지털 신호제어'],
-  },
-  {
-    task: '⑤ 정밀 데이터 기반 디지털 도로 운영(DX)',
-    main: '모빌리티',
-    sub: '도로교통운영 및 효율',
-    items: ['디지털트윈', '공간정보 플랫폼', 'HD맵', '도로 BIM'],
-  },
-  {
-    task: '⑥ 민간 혁신기술 기반 교통체계 AX',
-    main: '모빌리티',
-    sub: '생활밀착형 교통서비스',
-    items: ['생성형 AI', '민간 플랫폼 연계', 'AI 교통예측', 'AI 민원응대', 'AI 운영지원'],
-  },
-  {
-    task: '⑦ 이용자 맞춤형 통합 모빌리티 서비스',
-    main: '생활밀착형 교통서비스',
-    sub: '모빌리티',
-    items: ['MaaS', 'DRT', '수요응답형 버스', '통합환승'],
-  },
-  {
-    task: '⑧ 스마트 교통복지 구현',
-    main: '생활밀착형 교통서비스',
-    sub: '도로교통안전 및 재난',
-    items: ['교통약자 지원', '시각장애인 길안내', '고령자 안전보행', '농촌형 이동서비스'],
-  },
-];
-
-const KEYWORD_RULES = [
-  ['사고, 재난, 침수, 낙석, 위험, 응급', '도로교통안전 및 재난'],
-  ['신호, 교차로, 관제, 운영, 혼잡', '도로교통운영 및 효율'],
-  ['AI, 디지털트윈, V2X, 자율주행, C-ITS, DX, AX', '모빌리티'],
-  ['MaaS, DRT, 교통약자, 대중교통, 이동권', '생활밀착형 교통서비스'],
-];
 
 const URGENCY = [
   '미정',
@@ -489,29 +439,13 @@ function renderFieldReference() {
         <article>
           <strong>${escapeHtml(item.category)}</strong>
           <p>${item.subcategories.filter((value) => value !== '기타').map(escapeHtml).join(', ')}</p>
+          <div class="field-meta">
+            <span><b>관련 ITS 2030:</b> ${item.itsTasks.map(escapeHtml).join(', ')}</span>
+            <span><b>분류 키워드:</b> ${escapeHtml(item.keywords)}</span>
+          </div>
         </article>
       `).join('')}
     </div>
-    <details class="its-mapping">
-      <summary>ITS 2030 8대 과제 매핑 참고</summary>
-      <div class="its-task-grid">
-        ${ITS_2030_TASKS.map((item) => `
-          <article>
-            <strong>${escapeHtml(item.task)}</strong>
-            <p><b>주</b> ${escapeHtml(item.main)} <span>/</span> <b>보조</b> ${escapeHtml(item.sub)}</p>
-            <small>${item.items.map(escapeHtml).join(', ')}</small>
-          </article>
-        `).join('')}
-      </div>
-      <div class="keyword-rules">
-        <p class="guide-label">보고서·현안 키워드 분류 룰</p>
-        <div>
-          ${KEYWORD_RULES.map(([keywords, category]) => `
-            <span><b>${escapeHtml(category)}</b>${escapeHtml(keywords)}</span>
-          `).join('')}
-        </div>
-      </div>
-    </details>
   `;
 }
 
