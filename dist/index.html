@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ITS·교통·재난안전 기술수요조사</title>
+    <link rel="stylesheet" href="/src/styles.css" />
+  </head>
+  <body>
+    <main class="page">
+      <section class="hero">
+        <div class="badge">한국지능형교통체계협회 ITS Korea</div>
+        <h1>ITS·교통·재난안전 기술수요조사</h1>
+        <p>지자체 및 공공기관의 현장 현안을 발굴하고, 관련 기업 기술과 매칭하여 실증·조사·사업화로 연계하기 위한 사전 수요조사입니다.</p>
+      </section>
+      <section class="intro-note">
+        본 조사는 정부 국정과제와 연계하여 교통혁신 인프라, 재난안전관리, 재난 예방·대응 분야의 현장 기술수요를 파악하기 위한 자료로 활용됩니다. 응답 내용은 향후 기술 매칭, 상담회, 도슨트투어, 실증사업 연계 검토 등에 활용될 수 있습니다.
+      </section>
+      <section class="survey-meta" aria-label="조사 안내">
+        <div>
+          <span>붙임자료</span>
+          <strong>2026 교통·도로·재난안전 분야 기술수요조사</strong>
+        </div>
+        <div>
+          <span>담당/조사</span>
+          <strong>ITS Korea / 대외협력팀</strong>
+        </div>
+        <div>
+          <span>문의처</span>
+          <strong>031-478-0449</strong>
+        </div>
+        <div>
+          <span>회신처</span>
+          <strong><a href="mailto:lsi7491@itskroae.kr">lsi7491@itskroae.kr</a></strong>
+        </div>
+      </section>
+      <section id="guidebook" class="guidebook" aria-label="작성 참고 가이드북"></section>
+      <form id="survey" class="card">
+        <header class="section-title"><div><h2>1. 응답기관 기본정보</h2><p>기관별 취합과 후속 연락을 위한 기본 정보입니다.</p></div></header>
+        <div class="grid two" id="orgFields"></div>
+        <header class="section-title demands-head"><div><h2>2. 기술수요 입력</h2><p>문제 배경, 필요 기술, 적용 현장, 기대효과까지 한 건 단위로 작성해 주세요.</p></div><button type="button" class="secondary" id="addDemand">＋ 기술수요 추가</button></header>
+        <div id="demands"></div>
+        <section class="privacy-card">
+          <h2>5. 개인정보 수집 및 활용 동의</h2>
+          <div class="privacy-box">
+            <p><strong>수집 목적 :</strong> 기술수요 분석, 기업 매칭, 상담회 및 현장 프로그램 안내</p>
+            <p><strong>수집 항목 :</strong> 기관명, 부서명, 담당자명, 연락처, 이메일, 기술수요 응답내용</p>
+            <p><strong>보유 기간 :</strong> 조사 및 후속 프로그램 운영 종료 후 내부 기준에 따라 관리</p>
+          </div>
+          <label class="consent"><input id="consent" type="checkbox" /> 위 내용을 확인하였으며 개인정보 수집 및 활용에 동의합니다.</label>
+          <p class="privacy-footnote">※ 실제 운영 시 기관 내부 개인정보 처리방침 및 보유기간 기준에 맞게 문구 조정 필요</p>
+        </section>
+        <div id="message" class="message" hidden></div>
+        <div class="actions"><button type="button" class="secondary" id="saveDraft">임시저장</button><button type="submit">제출하기</button></div>
+      </form>
+    </main>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
