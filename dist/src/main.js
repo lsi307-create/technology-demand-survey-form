@@ -391,7 +391,7 @@ function renderQuestionInput(question, index = null) {
 
 function renderDocentTourDetails(index) {
   return `
-    <section class="docent-tour-panel" data-docent-panel="${index}" hidden>
+    <section class="docent-tour-panel full" data-docent-panel="${index}" hidden>
       <div class="docent-tour-copy">
         <span class="eyebrow">2026 강릉 ITS 세계총회 안내</span>
         <h4>2026년 10월 19일(월) ~ 23일(금)</h4>
@@ -1170,7 +1170,11 @@ function addDemand() {
   const section = document.createElement('section');
   section.className = 'demand-card';
   section.dataset.index = index;
-  const demandFields = visibleQuestions('demand').map((question) => renderQuestionInput(question, index)).join('');
+  const demandFields = visibleQuestions('demand').map((question) => (
+    question.id === 'docentTour'
+      ? `${renderQuestionInput(question, index)}${renderDocentTourDetails(index)}`
+      : renderQuestionInput(question, index)
+  )).join('');
   section.innerHTML = `
     <div class="demand-top">
       <div>
@@ -1183,7 +1187,6 @@ function addDemand() {
     <div class="grid two">
       ${demandFields}
     </div>
-    ${renderDocentTourDetails(index)}
   `;
 
   section.querySelector('.remove').addEventListener('click', () => {
