@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="260" viewBox="0 0 760 260" fill="none" role="img" aria-labelledby="title desc">
+  <title id="title">교통 도시 라인 일러스트</title>
+  <desc id="desc">도로, 교량, 차량, 버스, 신호, 통신을 표현한 연한 파란색 선형 일러스트</desc>
+  <path d="M12 178H742" stroke="#9CC5EE" stroke-width="3" stroke-linecap="round"/>
+  <path d="M54 205H718" stroke="#C2DBF5" stroke-width="2" stroke-linecap="round"/>
+  <path d="M24 143C82 101 119 106 158 135C205 171 245 160 290 119C349 65 404 77 449 126C492 172 540 168 587 113C628 65 672 69 726 125" stroke="#B5D4F4" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M320 178C366 126 420 126 466 178" stroke="#8FBCEB" stroke-width="3" stroke-linecap="round"/>
+  <path d="M338 161H448" stroke="#B5D4F4" stroke-width="2"/>
+  <path d="M372 178V136M418 178V136" stroke="#B5D4F4" stroke-width="2"/>
+  <rect x="100" y="112" width="58" height="66" rx="4" stroke="#B5D4F4" stroke-width="2"/>
+  <path d="M114 126H126M137 126H144M114 143H126M137 143H144M114 160H126M137 160H144" stroke="#B5D4F4" stroke-width="2" stroke-linecap="round"/>
+  <rect x="185" y="86" width="76" height="92" rx="5" stroke="#C2DBF5" stroke-width="2"/>
+  <path d="M202 105H215M231 105H244M202 126H215M231 126H244M202 147H215M231 147H244" stroke="#C2DBF5" stroke-width="2" stroke-linecap="round"/>
+  <rect x="548" y="112" width="58" height="66" rx="4" stroke="#B5D4F4" stroke-width="2"/>
+  <path d="M562 126H574M585 126H592M562 143H574M585 143H592M562 160H574M585 160H592" stroke="#B5D4F4" stroke-width="2" stroke-linecap="round"/>
+  <rect x="642" y="88" width="52" height="90" rx="5" stroke="#C2DBF5" stroke-width="2"/>
+  <path d="M654 107H664M674 107H684M654 126H664M674 126H684M654 145H664M674 145H684" stroke="#C2DBF5" stroke-width="2" stroke-linecap="round"/>
+  <path d="M501 178V76M493 76H509M493 103H509M493 130H509" stroke="#9CC5EE" stroke-width="2.5" stroke-linecap="round"/>
+  <circle cx="501" cy="56" r="7" stroke="#8FBCEB" stroke-width="2.5"/>
+  <path d="M474 48C489 33 513 33 528 48M461 35C483 13 519 13 541 35" stroke="#8FBCEB" stroke-width="2.5" stroke-linecap="round"/>
+  <rect x="622" y="52" width="25" height="54" rx="8" stroke="#9CC5EE" stroke-width="2.5"/>
+  <circle cx="634.5" cy="69" r="6" stroke="#9CC5EE" stroke-width="2"/>
+  <path d="M634.5 85V95" stroke="#9CC5EE" stroke-width="2" stroke-linecap="round"/>
+  <path d="M67 178H129C134 178 138 174 138 169V160C138 151 130 144 121 144H92C82 144 75 152 72 160L67 178Z" stroke="#75A9DE" stroke-width="3" stroke-linejoin="round"/>
+  <circle cx="86" cy="181" r="10" fill="#F7FBFF" stroke="#75A9DE" stroke-width="3"/>
+  <circle cx="122" cy="181" r="10" fill="#F7FBFF" stroke="#75A9DE" stroke-width="3"/>
+  <rect x="594" y="146" width="96" height="32" rx="10" stroke="#75A9DE" stroke-width="3"/>
+  <path d="M612 146V178M642 146V178M672 146V178" stroke="#75A9DE" stroke-width="2"/>
+  <circle cx="615" cy="181" r="9" fill="#F7FBFF" stroke="#75A9DE" stroke-width="3"/>
+  <circle cx="671" cy="181" r="9" fill="#F7FBFF" stroke="#75A9DE" stroke-width="3"/>
+  <path d="M272 178H342M12 225H168M214 225H389M428 225H742" stroke="#D7E8F8" stroke-width="2" stroke-linecap="round"/>
+</svg>
