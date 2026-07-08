@@ -1,6 +1,13 @@
 const SHEET_URL = 'https://docs.google.com/spreadsheets/d/1d4beTVvbY3y-I8OvuNd8IF42wApwvkAXCdLv5LEfzaE/edit?gid=0#gid=0';
 const GOOGLE_SHEET_WEBAPP_URL = window.GOOGLE_SHEET_WEBAPP_URL || '';
 const GOOGLE_SHEET_NAME = '시트1';
+const DOCENT_TOUR_URL = 'https://2026itsworldcongress.org/ITS/120002/event/custom/event.do?map=30';
+const DOCENT_TOUR_SLOTS = [
+  "10/21(수), 10:30~11:20('50)",
+  "10/21(수), 15:30~16:20('50)",
+  "10/22(목), 10:30~11:20('50)",
+  "10/22(목), 15:30~16:20('50)",
+];
 
 const SHEET_HEADERS = [
   '응답자ID',
@@ -17,6 +24,7 @@ const SHEET_HEADERS = [
   '소분류',
   '해결되었으면 하는 점',
   '도슨트투어 참가 희망',
+  '도슨트투어 희망 시간대',
   '참고자료/링크',
   '기타 의견',
   '기술상담 희망',
@@ -379,6 +387,26 @@ function renderQuestionInput(question, index = null) {
   if (question.type === 'select') return select(name, question.label, question.options || ['미정'], question.required, question.defaultValue || '미정');
   if (question.type === 'textarea') return textarea(name, question.label, question.placeholder, question.required, question.rows || 4);
   return input(name, question.label, question.placeholder, question.type || 'text', question.required);
+}
+
+function renderDocentTourDetails(index) {
+  return `
+    <section class="docent-tour-panel" data-docent-panel="${index}" hidden>
+      <div class="docent-tour-copy">
+        <span class="eyebrow">2026 강릉 ITS 세계총회 안내</span>
+        <h4>2026년 10월 19일(월) ~ 23일(금)</h4>
+        <p>강릉 올림픽 파크</p>
+        <a href="${DOCENT_TOUR_URL}" target="_blank" rel="noopener">안내페이지 열기</a>
+      </div>
+      <label class="field">
+        <span>희망하는 시간대<b>*</b></span>
+        <select name="docentTourSlot-${index}" data-docent-slot="${index}" disabled>
+          <option value="">시간대를 선택해 주세요</option>
+          ${DOCENT_TOUR_SLOTS.map((slot) => `<option>${slot}</option>`).join('')}
+        </select>
+      </label>
+    </section>
+  `;
 }
 
 function renderOrgFields() {
@@ -1064,6 +1092,21 @@ function updateSubcategoryOptions(index, category, selectedValue = '') {
   `;
 }
 
+function updateDocentTourDetails(index) {
+  const form = document.querySelector('#survey');
+  const docentTour = formValue(form, `docentTour-${index}`);
+  const panel = document.querySelector(`[data-docent-panel="${CSS.escape(String(index))}"]`);
+  const slot = fieldByName(form, `docentTourSlot-${index}`);
+  const isWanted = docentTour === '희망';
+
+  if (panel) panel.hidden = !isWanted;
+  if (slot) {
+    slot.disabled = !isWanted;
+    slot.required = false;
+    if (!isWanted) slot.value = '';
+  }
+}
+
 function exampleText(value) {
   if (!value) return '';
   return value.startsWith('(작성 예시)') ? value : `(작성 예시) ${value}`;
@@ -1140,6 +1183,7 @@ function addDemand() {
     <div class="grid two">
       ${demandFields}
     </div>
+    ${renderDocentTourDetails(index)}
   `;
 
   section.querySelector('.remove').addEventListener('click', () => {
@@ -1148,8 +1192,12 @@ function addDemand() {
   section.querySelector(`[name="category-${index}"]`)?.addEventListener('change', (event) => {
     updateSubcategoryOptions(index, event.target.value);
   });
+  section.querySelector(`[name="docentTour-${index}"]`)?.addEventListener('change', () => {
+    updateDocentTourDetails(index);
+  });
 
   document.querySelector('#demands').append(section);
+  updateDocentTourDetails(index);
 }
 
 function formValue(form, name) {
@@ -1168,7 +1216,10 @@ function collect() {
     ...base,
     demands: [...document.querySelectorAll('.demand-card')].map((card) => {
       const i = card.dataset.index;
-      return Object.fromEntries(allQuestions('demand').map((question) => [question.id, formValue(form, `${question.id}-${i}`)]));
+      return {
+        ...Object.fromEntries(allQuestions('demand').map((question) => [question.id, formValue(form, `${question.id}-${i}`)])),
+        docentTourSlot: formValue(form, `docentTourSlot-${i}`),
+      };
     }),
   };
 }
@@ -1196,6 +1247,7 @@ function sheetRowsFromPayload(payload, status = '제출') {
     소분류: demand.subcategory,
     '해결되었으면 하는 점': demand.desiredOutcome,
     '도슨트투어 참가 희망': demand.docentTour,
+    '도슨트투어 희망 시간대': demand.docentTourSlot,
     '참고자료/링크': demand.attachments,
     '기타 의견': demand.note,
     '기술상담 희망': demand.consultation,
@@ -1278,6 +1330,12 @@ async function submit(event) {
 
   if (invalid >= 0) {
     show(`${invalid + 1}번 기술수요의 필수 문항을 모두 입력해 주세요.`);
+    return;
+  }
+
+  const missingDocentSlot = payload.demands.findIndex((demand) => demand.docentTour === '희망' && !demand.docentTourSlot);
+  if (missingDocentSlot >= 0) {
+    show(`${missingDocentSlot + 1}번 기술수요의 도슨트투어 희망 시간대를 선택해 주세요.`);
     return;
   }
 
