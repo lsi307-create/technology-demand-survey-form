@@ -3,7 +3,7 @@ const GOOGLE_SHEET_WEBAPP_URL = window.GOOGLE_SHEET_WEBAPP_URL || '';
 const GOOGLE_SHEET_NAME = '시트1';
 
 const SHEET_HEADERS = [
-  '응답ID',
+  '응답자ID',
   '제출일시',
   '설문상태',
   '순번',
@@ -315,6 +315,15 @@ let configSource = '로컬 초안';
 let configChannel = null;
 
 let demandCount = 0;
+
+function viewMode() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get('view') === 'admin' ? 'admin' : 'respondent';
+}
+
+function applyViewMode() {
+  document.body.dataset.view = viewMode();
+}
 
 function input(name, label, placeholder = '', type = 'text', required = true) {
   return `
@@ -1152,7 +1161,7 @@ function collect() {
   const base = Object.fromEntries(allQuestions('org').map((question) => [question.id, formValue(form, question.id)]));
 
   return {
-    responseId: `TRD-${new Date().toISOString().slice(0, 10).replaceAll('-', '')}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`,
+    responseId: base.email,
     submittedAt: new Date().toISOString(),
     sourceSheet: SHEET_URL,
     surveyStatus: surveyConfig.status,
@@ -1173,7 +1182,7 @@ function show(message, ok = false) {
 
 function sheetRowsFromPayload(payload, status = '제출') {
   return payload.demands.map((demand, index) => ({
-    응답ID: payload.responseId,
+    응답자ID: payload.responseId,
     제출일시: payload.submittedAt,
     설문상태: payload.surveyStatus,
     순번: index + 1,
@@ -1241,8 +1250,9 @@ function renderDemandCards() {
 }
 
 function renderAll() {
+  applyViewMode();
   renderSurveyNotice();
-  renderAdminApp();
+  if (viewMode() === 'admin') renderAdminApp();
   renderOrgFields();
   renderFieldReference();
   renderDemandCards();
@@ -1302,7 +1312,7 @@ async function submit(event) {
       localStorage.setItem('technology-demand-surveys', JSON.stringify(saved));
     }
 
-    show(`제출이 완료되었습니다. 응답 ID: ${payload.responseId}`, true);
+    show(`제출이 완료되었습니다. 응답자 ID: ${payload.responseId}`, true);
   } catch (error) {
     show(`저장 중 오류가 발생했습니다. (${error.message})`);
   }

@@ -1,6 +1,9 @@
 :root { font-family: 'Pretendard', 'Noto Sans KR', system-ui, sans-serif; color: #0f2740; background: #f1f4f7; }
 * { box-sizing: border-box; }
 body { margin: 0; }
+body[data-view="respondent"] #adminApp { display: none; }
+body[data-view="admin"] #guidebook,
+body[data-view="admin"] #survey { display: none; }
 .page { max-width: 1120px; margin: 0 auto; padding: 10px 14px 80px; }
 .hero { color: white; padding: 34px 40px 36px; border-radius: 18px; background: linear-gradient(135deg, #14517f, #0f6dad); box-shadow: 0 14px 34px rgba(15, 53, 101, .18); }
 .badge { display: inline-flex; padding: 7px 14px; border: 0; border-radius: 999px; background: rgba(255,255,255,.16); font-weight: 800; font-size: 13px; }

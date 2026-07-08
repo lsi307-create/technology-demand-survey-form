@@ -28,6 +28,13 @@
 npm run dev
 ```
 
+## 테스트 링크
+
+- 응답자 페이지: `https://lsi307-create.github.io/technology-demand-survey-form/#survey`
+- 관리자 페이지: `https://lsi307-create.github.io/technology-demand-survey-form/?view=admin#adminApp`
+
+기본 공개 URL은 응답자 페이지로 동작하며, 관리자 화면은 `?view=admin`을 붙였을 때만 노출됩니다.
+
 ## Supabase 저장 설정
 
 `technology_demand_surveys` 테이블을 만든 뒤 `index.html` 또는 배포 템플릿에서 다음 전역 변수를 설정합니다.
