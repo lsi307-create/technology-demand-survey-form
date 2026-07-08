@@ -281,11 +281,12 @@ const READINESS = [
 ];
 
 const PARTICIPATION_OPTIONS = ['미정', '희망', '검토 가능', '희망하지 않음'];
+const DOCENT_TOUR_OPTIONS = ['희망하지 않음', '희망'];
 
 const DEFAULT_SURVEY_CONFIG = {
   status: '공개',
   publicUrl: 'https://lsi307-create.github.io/technology-demand-survey-form/',
-  notice: '응답 문항을 최소화했습니다. 관리자 화면에서 문항 노출/필수 여부를 즉시 조정할 수 있습니다.',
+  notice: '응답 내용은 향후 지자체협의체 회의, 기술상담, 도슨트투어, 실증사업, 사업화 연계 검토를 위한 기초자료로 활용됩니다. 참가자 여러분들께 소정의 선물을 보내드립니다.',
   questions: [
     { id: 'org', group: 'org', label: '기관/단체명', placeholder: '예: OO시청, OO공사, OO협회', type: 'text', required: true, visible: true, help: '응답 기관 또는 단체명을 입력합니다.' },
     { id: 'department', group: 'org', label: '부서명', placeholder: '예: 교통정책과, 스마트도시과', type: 'text', required: true, visible: true, help: '후속 연락 가능한 부서명을 입력합니다.' },
@@ -301,7 +302,7 @@ const DEFAULT_SURVEY_CONFIG = {
     { id: 'desiredOutcome', group: 'demand', label: '해결되었으면 하는 점', placeholder: '예: 위험상황을 빠르게 감지하고 담당자에게 자동 알림이 가면 좋겠습니다.', type: 'textarea', required: false, visible: true, help: '기술명보다 원하는 개선 결과를 자유롭게 적습니다.' },
     { id: 'consultation', group: 'demand', label: '기술상담 희망', placeholder: '', type: 'select', options: PARTICIPATION_OPTIONS, required: false, visible: false, help: '후속 기술상담 희망 여부입니다.' },
     { id: 'pilotIntent', group: 'demand', label: '실증사업 참여 의향', placeholder: '', type: 'select', options: PARTICIPATION_OPTIONS, required: false, visible: false, help: '향후 실증사업 연계 검토용입니다.' },
-    { id: 'docentTour', group: 'demand', label: '도슨트투어 참가 희망', placeholder: '', type: 'select', options: PARTICIPATION_OPTIONS, required: true, visible: true, help: '도슨트투어 참여 수요 파악용입니다.' },
+    { id: 'docentTour', group: 'demand', label: '도슨트투어 참가 희망', placeholder: '', type: 'select', options: DOCENT_TOUR_OPTIONS, required: true, visible: true, help: '도슨트투어 참여 수요 파악용입니다.' },
     { id: 'type', group: 'demand', label: '수요 유형', placeholder: '', type: 'select', options: DEMAND_TYPES, required: false, visible: false, help: '관리자에서 필요 시 ON 처리합니다.' },
     { id: 'urgency', group: 'demand', label: '추진 시급성', placeholder: '', type: 'select', options: URGENCY, required: false, visible: false, help: '선택 입력입니다.' },
     { id: 'readiness', group: 'demand', label: '검토 단계', placeholder: '', type: 'select', options: READINESS, required: false, visible: false, help: '응답 부담을 줄이기 위해 기본 OFF입니다.' },
@@ -314,9 +315,9 @@ const DEFAULT_SURVEY_CONFIG = {
   ],
 };
 
-const STORAGE_KEY = 'technology-demand-survey-admin-config-v3';
-const PUBLISHED_CONFIG_KEY = 'technology-demand-survey-published-config-v3';
-const CONFIG_SYNC_CHANNEL = 'technology-demand-survey-config-sync-v3';
+const STORAGE_KEY = 'technology-demand-survey-admin-config-v4';
+const PUBLISHED_CONFIG_KEY = 'technology-demand-survey-published-config-v4';
+const CONFIG_SYNC_CHANNEL = 'technology-demand-survey-config-sync-v4';
 const CONFIG_SLUG = '2026-traffic-road-safety-demand';
 let surveyConfig = loadSurveyConfig();
 let configSource = '로컬 초안';

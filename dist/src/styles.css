@@ -169,3 +169,39 @@ button:disabled { opacity: .55; cursor: progress; }
 .actions button { min-width: 118px; }
 @media (max-width: 900px) { .survey-meta, .admin-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } .guide-overview, .admin-grid, .admin-preview-grid, .question-admin-row, .question-edit-panel { grid-template-columns: 1fr; } }
 @media (max-width: 760px) { .page { padding: 10px 10px 48px; } .hero, .card, .guidebook, .admin-shell { padding: 24px; border-radius: 18px; } .survey-meta, .admin-stats { grid-template-columns: 1fr; padding: 14px; border-radius: 20px; } .survey-meta div { min-height: auto; } .admin-head, .admin-section-title, .process-grid, .major-field-list, .guidebook-head, .section-title, .demand-top { align-items: flex-start; flex-wrap: wrap; grid-template-columns: 1fr; } .admin-actions { width: 100%; justify-content: stretch; } .admin-actions button { flex: 1; } .major-field-list strong { padding-right: 0; } .field-draft-button { position: static; margin-top: 10px; } .guidebook-head .secondary, .guide-actions { width: 100%; flex-basis: 100%; } .guide-panel dl, .grid.two, .guide-effects, .docent-tour-panel { grid-template-columns: 1fr; } .source-note { order: 3; width: 100%; margin: 10px 0 0; text-align: center; } .demands-head .secondary { margin-left: 0; width: 100%; } .actions > * { width: 100%; } }
+
+/* Modern campaign-form refresh */
+:root { color: #172033; background: #eef3f7; }
+body { background: radial-gradient(circle at top left, rgba(32, 132, 166, .12), transparent 34rem), #eef3f7; }
+.page { max-width: 1180px; padding: 24px 18px 86px; }
+.hero { position: relative; overflow: hidden; padding: 44px 48px 46px; border: 1px solid rgba(255,255,255,.5); border-radius: 10px; background: linear-gradient(135deg, #102a52 0%, #155b88 58%, #0b7b8f 100%); box-shadow: 0 24px 70px rgba(20, 44, 78, .18); }
+.hero::after { content: ""; position: absolute; inset: auto -80px -120px auto; width: 360px; height: 360px; border: 1px solid rgba(255,255,255,.18); border-radius: 50%; }
+.badge { border-radius: 7px; background: rgba(255,255,255,.12); font-size: 12px; letter-spacing: 0; }
+h1 { max-width: 760px; margin-top: 24px; font-size: clamp(34px, 4.8vw, 56px); font-weight: 900; }
+.hero p { max-width: 820px; font-size: 17px; font-weight: 650; opacity: .92; }
+.intro-note { position: relative; margin-top: 18px; padding: 18px 22px 18px 58px; border: 1px solid #cfe7e5; border-left: 0; border-radius: 10px; background: #f7fffd; box-shadow: 0 12px 32px rgba(19, 85, 96, .08); }
+.intro-note::before { content: "선물"; position: absolute; left: 18px; top: 17px; display: inline-flex; align-items: center; justify-content: center; min-width: 28px; height: 28px; padding: 0 6px; border-radius: 7px; background: #0f766e; color: white; font-size: 11px; font-weight: 900; }
+.survey-meta { gap: 10px; padding: 0; background: transparent; box-shadow: none; }
+.survey-meta div { min-height: 76px; padding: 15px 16px; border-color: #d8e3ea; border-radius: 8px; background: rgba(255,255,255,.82); box-shadow: 0 10px 24px rgba(26, 44, 68, .05); }
+.survey-meta span { color: #647287; font-size: 12px; }
+.survey-meta strong { color: #102a52; font-size: 15px; }
+.card, .guidebook, .admin-shell { border: 1px solid #dbe5ec; border-radius: 10px; box-shadow: 0 22px 60px rgba(26, 44, 68, .09); }
+.section-title { align-items: flex-start; padding-bottom: 14px; border-bottom: 1px solid #e6edf2; }
+.section-title h2 { font-size: 24px; font-weight: 900; color: #102a52; }
+.section-title p { color: #647287; font-weight: 650; }
+.field-reference, .demand-card, .admin-panel, .guide-panel, .guide-slide-card { border-radius: 10px; background: #fbfdff; }
+.demand-card { padding: 24px; border-color: #dbe5ec; background: white; box-shadow: 0 12px 34px rgba(26, 44, 68, .06); }
+.demand-top h3 { color: #102a52; font-size: 23px; }
+.eyebrow { color: #718094; text-transform: none; }
+.field { gap: 8px; color: #243247; font-size: 14px; }
+input, select, textarea { border-color: #d6e0e8; border-radius: 8px; background: #f9fbfd; font-size: 15px; }
+input:focus, select:focus, textarea:focus { border-color: #0891b2; box-shadow: 0 0 0 3px rgba(8,145,178,.14); }
+button, .secondary.link { border-radius: 8px; background: #0f766e; }
+.secondary { background: white; border-color: #cfdbe5; color: #102a52; }
+.docent-tour-panel { grid-column: 1 / -1; margin: 0; border-radius: 8px; border-color: #b8e2de; background: linear-gradient(135deg, #f2fffc, #f3f9ff); }
+.docent-tour-copy h4 { color: #102a52; }
+.docent-tour-copy a { color: #0f766e; }
+.privacy-card { border-top-color: #e6edf2; }
+.privacy-box, .consent { border-radius: 8px; }
+.actions button { min-width: 132px; }
+@media (max-width: 760px) { .page { padding-top: 14px; } .hero, .card, .guidebook, .admin-shell { border-radius: 10px; padding: 24px; } .intro-note { padding-left: 20px; } .intro-note::before { position: static; margin: 0 0 8px; } }
