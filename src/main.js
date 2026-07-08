@@ -1,4 +1,37 @@
 const SHEET_URL = 'https://docs.google.com/spreadsheets/d/1d4beTVvbY3y-I8OvuNd8IF42wApwvkAXCdLv5LEfzaE/edit?gid=0#gid=0';
+const GOOGLE_SHEET_WEBAPP_URL = window.GOOGLE_SHEET_WEBAPP_URL || '';
+const GOOGLE_SHEET_NAME = '시트1';
+
+const SHEET_HEADERS = [
+  '응답ID',
+  '제출일시',
+  '설문상태',
+  '순번',
+  '기관/단체명',
+  '부서명',
+  '담당자명',
+  '연락처',
+  '이메일',
+  '기술수요명',
+  '대분류',
+  '소분류',
+  '해결되었으면 하는 점',
+  '도슨트투어 참가 희망',
+  '참고자료/링크',
+  '기타 의견',
+  '기술상담 희망',
+  '실증사업 참여 의향',
+  '적용 대상/현장',
+  '현장 문제 및 애로사항',
+  '수요 유형',
+  '추진 시급성',
+  '검토 단계',
+  '추진 배경',
+  '필요 기술/서비스 내용',
+  '보유 데이터 및 연계 가능 자료',
+  '기대효과 및 활용계획',
+  '제출상태',
+];
 
 const DEMAND_TYPES = [
   '미정',
@@ -239,14 +272,47 @@ const READINESS = [
   '예산/사업화 검토 중',
 ];
 
-const orgFields = [
-  ['org', '기관/단체명', '예: OO시청, OO공사, OO협회', 'text'],
-  ['department', '부서명', '예: 교통정책과, 스마트도시과', 'text'],
-  ['writer', '담당자명', '', 'text'],
-  ['position', '직위', '', 'text', false],
-  ['phone', '연락처', '010-0000-0000', 'tel'],
-  ['email', '이메일', 'name@example.go.kr', 'email'],
-];
+const PARTICIPATION_OPTIONS = ['미정', '희망', '검토 가능', '희망하지 않음'];
+
+const DEFAULT_SURVEY_CONFIG = {
+  status: '공개',
+  publicUrl: 'https://lsi307-create.github.io/technology-demand-survey-form/',
+  notice: '응답 문항을 최소화했습니다. 관리자 화면에서 문항 노출/필수 여부를 즉시 조정할 수 있습니다.',
+  questions: [
+    { id: 'org', group: 'org', label: '기관/단체명', placeholder: '예: OO시청, OO공사, OO협회', type: 'text', required: true, visible: true, help: '응답 기관 또는 단체명을 입력합니다.' },
+    { id: 'department', group: 'org', label: '부서명', placeholder: '예: 교통정책과, 스마트도시과', type: 'text', required: true, visible: true, help: '후속 연락 가능한 부서명을 입력합니다.' },
+    { id: 'writer', group: 'org', label: '담당자명', placeholder: '', type: 'text', required: true, visible: true, help: '응답 작성 담당자명입니다.' },
+    { id: 'position', group: 'org', label: '직위', placeholder: '', type: 'text', required: false, visible: false, help: '선택 입력입니다.' },
+    { id: 'phone', group: 'org', label: '연락처', placeholder: '010-0000-0000', type: 'tel', required: true, visible: true, help: '기술상담 또는 후속 확인 연락처입니다.' },
+    { id: 'email', group: 'org', label: '이메일', placeholder: 'name@example.go.kr', type: 'email', required: true, visible: true, help: '응답 확인 및 후속 안내용 이메일입니다.' },
+    { id: 'title', group: 'demand', label: '기술수요명', placeholder: '예: V2X 기반 교차로 위험정보 실시간 연계 서비스', type: 'text', required: false, visible: true, help: '간단한 제목이 있으면 입력합니다.' },
+    { id: 'category', group: 'demand', label: '대분류', placeholder: '', type: 'category', required: true, visible: true, help: '분야 1~4 또는 기타 중 선택합니다.' },
+    { id: 'subcategory', group: 'demand', label: '소분류', placeholder: '대분류에 따른 아이템을 선택해 주세요', type: 'subcategory', required: false, visible: true, help: '모르면 기타 또는 미선택 상태로 둘 수 있습니다.' },
+    { id: 'site', group: 'demand', label: '적용 대상/현장', placeholder: '예: 주요 교차로, 지하차도, 공영주차장, 자율주행 시범지구', type: 'text', required: false, visible: false, help: '기술이 적용될 현장을 적습니다.' },
+    { id: 'problem', group: 'demand', label: '현장 문제 및 애로사항', placeholder: '예: 상습 정체, 침수 위험, 교통약자 이동 불편, 실시간 정보 연계 부족 등', type: 'textarea', required: false, visible: false, help: '현재 가장 불편하거나 해결이 필요한 문제만 적어도 됩니다.' },
+    { id: 'desiredOutcome', group: 'demand', label: '해결되었으면 하는 점', placeholder: '예: 위험상황을 빠르게 감지하고 담당자에게 자동 알림이 가면 좋겠습니다.', type: 'textarea', required: false, visible: true, help: '기술명보다 원하는 개선 결과를 자유롭게 적습니다.' },
+    { id: 'consultation', group: 'demand', label: '기술상담 희망', placeholder: '', type: 'select', options: PARTICIPATION_OPTIONS, required: false, visible: false, help: '후속 기술상담 희망 여부입니다.' },
+    { id: 'pilotIntent', group: 'demand', label: '실증사업 참여 의향', placeholder: '', type: 'select', options: PARTICIPATION_OPTIONS, required: false, visible: false, help: '향후 실증사업 연계 검토용입니다.' },
+    { id: 'docentTour', group: 'demand', label: '도슨트투어 참가 희망', placeholder: '', type: 'select', options: PARTICIPATION_OPTIONS, required: true, visible: true, help: '도슨트투어 참여 수요 파악용입니다.' },
+    { id: 'type', group: 'demand', label: '수요 유형', placeholder: '', type: 'select', options: DEMAND_TYPES, required: false, visible: false, help: '관리자에서 필요 시 ON 처리합니다.' },
+    { id: 'urgency', group: 'demand', label: '추진 시급성', placeholder: '', type: 'select', options: URGENCY, required: false, visible: false, help: '선택 입력입니다.' },
+    { id: 'readiness', group: 'demand', label: '검토 단계', placeholder: '', type: 'select', options: READINESS, required: false, visible: false, help: '응답 부담을 줄이기 위해 기본 OFF입니다.' },
+    { id: 'background', group: 'demand', label: '추진 배경', placeholder: '관련 정책, 보도자료, 현장 여건 등', type: 'textarea', required: false, visible: false, help: '기본 OFF. 필요할 때 관리자에서 켭니다.' },
+    { id: 'solution', group: 'demand', label: '필요 기술/서비스 내용', placeholder: '예: AI 감지, V2X 정보연계, 디지털 트윈 검증 등', type: 'textarea', required: false, visible: false, help: '기본 OFF. 기술명이 명확한 조사에서만 사용합니다.' },
+    { id: 'data', group: 'demand', label: '보유 데이터 및 연계 가능 자료', placeholder: '예: CCTV, 교통량, 신호정보, 민원 데이터 등', type: 'textarea', required: false, visible: false, help: '기본 OFF. 데이터 연계 조사 시 사용합니다.' },
+    { id: 'expected', group: 'demand', label: '기대효과 및 활용계획', placeholder: '예: 사고 예방, 행정 효율화, 실증 비용 절감 등', type: 'textarea', required: false, visible: false, help: '기본 OFF. 응답 부담을 줄이기 위해 숨깁니다.' },
+    { id: 'attachments', group: 'demand', label: '참고자료/링크', placeholder: '기획서, 사진, 보고서, 기사, 기존 시스템 링크 등이 있으면 적어 주세요.', type: 'textarea', rows: 3, required: false, visible: true, help: '선택 입력입니다.' },
+    { id: 'note', group: 'demand', label: '기타 의견', placeholder: '추가로 전달할 사항을 자유롭게 적어 주세요.', type: 'textarea', rows: 3, required: false, visible: true, help: '선택 입력입니다.' },
+  ],
+};
+
+const STORAGE_KEY = 'technology-demand-survey-admin-config-v3';
+const PUBLISHED_CONFIG_KEY = 'technology-demand-survey-published-config-v3';
+const CONFIG_SYNC_CHANNEL = 'technology-demand-survey-config-sync-v3';
+const CONFIG_SLUG = '2026-traffic-road-safety-demand';
+let surveyConfig = loadSurveyConfig();
+let configSource = '로컬 초안';
+let configChannel = null;
 
 let demandCount = 0;
 
@@ -271,13 +337,13 @@ function select(name, label, values, required = true, selectedValue = '') {
   `;
 }
 
-function subcategorySelect(index, category = '', selectedValue = '') {
+function subcategorySelect(index, category = '', selectedValue = '', question = questionById('subcategory')) {
   const values = SUBCATEGORIES[category] || [];
   return `
     <label class="field">
-      <span>소분류<b>*</b></span>
-      <select name="subcategory-${index}" required ${values.length ? '' : 'disabled'}>
-        <option value="">${values.length ? '대분류에 따른 아이템을 선택해 주세요' : '대분류를 먼저 선택해 주세요'}</option>
+      <span>${question?.label || '소분류'}${question?.required ? '<b>*</b>' : ''}</span>
+      <select name="subcategory-${index}" ${question?.required ? 'required' : ''} ${values.length ? '' : 'disabled'}>
+        <option value="">${values.length ? (question?.placeholder || '대분류에 따른 아이템을 선택해 주세요') : '대분류를 먼저 선택해 주세요'}</option>
         ${values.map((value) => `<option ${value === selectedValue ? 'selected' : ''}>${value}</option>`).join('')}
       </select>
     </label>
@@ -293,6 +359,23 @@ function textarea(name, label, placeholder = '', required = false, rows = 4) {
   `;
 }
 
+function questionFieldName(question, index = null) {
+  return question.group === 'demand' ? `${question.id}-${index}` : question.id;
+}
+
+function renderQuestionInput(question, index = null) {
+  const name = questionFieldName(question, index);
+  if (question.type === 'category') return select(name, question.label, CATEGORIES, question.required);
+  if (question.type === 'subcategory') return subcategorySelect(index, '', '', question);
+  if (question.type === 'select') return select(name, question.label, question.options || ['미정'], question.required, question.defaultValue || '미정');
+  if (question.type === 'textarea') return textarea(name, question.label, question.placeholder, question.required, question.rows || 4);
+  return input(name, question.label, question.placeholder, question.type || 'text', question.required);
+}
+
+function renderOrgFields() {
+  document.querySelector('#orgFields').innerHTML = visibleQuestions('org').map((question) => renderQuestionInput(question)).join('');
+}
+
 function escapeHtml(value) {
   return String(value).replace(/[&<>"']/g, (char) => ({
     '&': '&amp;',
@@ -301,6 +384,243 @@ function escapeHtml(value) {
     '"': '&quot;',
     "'": '&#39;',
   })[char]);
+}
+
+function cloneConfig(config) {
+  return JSON.parse(JSON.stringify(config));
+}
+
+function mergeQuestions(savedQuestions = []) {
+  const savedById = new Map(savedQuestions.map((question) => [question.id, question]));
+  const merged = DEFAULT_SURVEY_CONFIG.questions.map((question) => ({
+    ...question,
+    ...(savedById.get(question.id) || {}),
+  }));
+  const knownIds = new Set(merged.map((question) => question.id));
+  return [
+    ...merged,
+    ...savedQuestions.filter((question) => !knownIds.has(question.id)),
+  ];
+}
+
+function loadSurveyConfig() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+    if (!saved) return cloneConfig(DEFAULT_SURVEY_CONFIG);
+    return {
+      ...cloneConfig(DEFAULT_SURVEY_CONFIG),
+      ...saved,
+      questions: mergeQuestions(saved.questions),
+    };
+  } catch {
+    return cloneConfig(DEFAULT_SURVEY_CONFIG);
+  }
+}
+
+function supabaseHeaders(extra = {}) {
+  const key = window.SUPABASE_ANON_KEY;
+  return {
+    apikey: key,
+    Authorization: `Bearer ${key}`,
+    'Content-Type': 'application/json',
+    ...extra,
+  };
+}
+
+function hasRemoteConfigStore() {
+  return Boolean(window.SUPABASE_URL && window.SUPABASE_ANON_KEY);
+}
+
+async function fetchPublishedConfig() {
+  if (hasRemoteConfigStore()) {
+    const url = `${window.SUPABASE_URL}/rest/v1/survey_configs?slug=eq.${encodeURIComponent(CONFIG_SLUG)}&status=eq.published&select=config,published_at&order=published_at.desc&limit=1`;
+    const res = await fetch(url, { headers: supabaseHeaders() });
+    if (!res.ok) throw new Error(await res.text());
+    const [row] = await res.json();
+    if (row?.config) {
+      configSource = `원격 발행본 ${row.published_at ? `(${new Date(row.published_at).toLocaleString('ko-KR')})` : ''}`;
+      return row.config;
+    }
+  }
+
+  const localPublished = JSON.parse(localStorage.getItem(PUBLISHED_CONFIG_KEY) || 'null');
+  if (localPublished) {
+    configSource = '로컬 발행본';
+    return localPublished;
+  }
+
+  configSource = '기본 템플릿';
+  return null;
+}
+
+async function loadPublishedConfig() {
+  try {
+    const published = await fetchPublishedConfig();
+    if (published) {
+      surveyConfig = {
+        ...cloneConfig(DEFAULT_SURVEY_CONFIG),
+        ...published,
+        questions: mergeQuestions(published.questions),
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(surveyConfig));
+    }
+  } catch (error) {
+    configSource = '원격 설정 불러오기 실패 - 로컬 초안 사용';
+    console.warn('Published survey config load failed:', error);
+  }
+}
+
+async function publishSurveyConfig() {
+  const payload = {
+    ...surveyConfig,
+    publishedAt: new Date().toISOString(),
+  };
+
+  if (hasRemoteConfigStore()) {
+    const res = await fetch(`${window.SUPABASE_URL}/rest/v1/survey_configs`, {
+      method: 'POST',
+      headers: supabaseHeaders({ Prefer: 'resolution=merge-duplicates,return=minimal' }),
+      body: JSON.stringify({
+        slug: CONFIG_SLUG,
+        status: 'published',
+        config: payload,
+        published_at: payload.publishedAt,
+      }),
+    });
+    if (!res.ok) throw new Error(await res.text());
+    configSource = '원격 발행본';
+  } else {
+    localStorage.setItem(PUBLISHED_CONFIG_KEY, JSON.stringify(payload));
+    configSource = '로컬 발행본';
+  }
+
+  notifyConfigChanged('published');
+  show(hasRemoteConfigStore()
+    ? '설문 설정이 원격 DB에 발행되었습니다. 응답자 페이지는 최신 설정을 주기적으로 확인합니다.'
+    : '로컬 발행본으로 저장되었습니다. 실제 운영 반영은 Supabase 연결 후 원격 발행을 사용합니다.', true);
+  renderAll();
+}
+
+function persistSurveyConfig(source = '로컬 초안') {
+  configSource = source;
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(surveyConfig));
+  notifyConfigChanged('draft');
+}
+
+function applyIncomingConfig(config, source = '실시간 반영') {
+  if (!config) return;
+  surveyConfig = {
+    ...cloneConfig(DEFAULT_SURVEY_CONFIG),
+    ...config,
+    questions: mergeQuestions(config.questions),
+  };
+  configSource = source;
+  renderAll();
+}
+
+function notifyConfigChanged(reason) {
+  const payload = {
+    reason,
+    config: surveyConfig,
+    updatedAt: new Date().toISOString(),
+  };
+  try {
+    configChannel?.postMessage(payload);
+  } catch {
+    // BroadcastChannel is optional; storage events still cover other tabs.
+  }
+}
+
+function setupConfigRealtimeSync() {
+  if ('BroadcastChannel' in window) {
+    configChannel = new BroadcastChannel(CONFIG_SYNC_CHANNEL);
+    configChannel.addEventListener('message', (event) => {
+      if (event.data?.config) applyIncomingConfig(event.data.config, '실시간 관리자 수정');
+    });
+  }
+
+  window.addEventListener('storage', (event) => {
+    if (event.key === STORAGE_KEY && event.newValue) {
+      applyIncomingConfig(JSON.parse(event.newValue), '실시간 관리자 수정');
+    }
+    if (event.key === PUBLISHED_CONFIG_KEY && event.newValue) {
+      applyIncomingConfig(JSON.parse(event.newValue), '로컬 발행본');
+    }
+    if (event.key === PUBLISHED_CONFIG_KEY && !event.newValue) {
+      applyIncomingConfig(DEFAULT_SURVEY_CONFIG, '기본 템플릿');
+    }
+  });
+}
+
+function setupRemotePublishedSync() {
+  if (!hasRemoteConfigStore()) return;
+  window.setInterval(async () => {
+    try {
+      const before = JSON.stringify(surveyConfig);
+      const published = await fetchPublishedConfig();
+      if (published && JSON.stringify(published) !== before) {
+        applyIncomingConfig(published, configSource || '원격 발행본');
+      }
+    } catch (error) {
+      console.warn('Published survey config sync failed:', error);
+    }
+  }, 5000);
+}
+
+function resetSurveyConfig() {
+  surveyConfig = cloneConfig(DEFAULT_SURVEY_CONFIG);
+  localStorage.removeItem(PUBLISHED_CONFIG_KEY);
+  persistSurveyConfig('기본 템플릿');
+  renderAll();
+  show('관리자 설정이 기본값으로 복원되었습니다.', true);
+}
+
+function visibleQuestions(group) {
+  return surveyConfig.questions.filter((question) => question.group === group && question.visible);
+}
+
+function allQuestions(group) {
+  return surveyConfig.questions.filter((question) => question.group === group);
+}
+
+function questionById(id) {
+  return surveyConfig.questions.find((question) => question.id === id);
+}
+
+function updateQuestion(id, patch) {
+  surveyConfig.questions = surveyConfig.questions.map((question) => (
+    question.id === id ? { ...question, ...patch } : question
+  ));
+  persistSurveyConfig();
+  renderAll();
+}
+
+function moveQuestion(id, direction) {
+  const index = surveyConfig.questions.findIndex((question) => question.id === id);
+  if (index < 0) return;
+  const question = surveyConfig.questions[index];
+  const swapIndex = direction < 0
+    ? [...surveyConfig.questions].slice(0, index).findLastIndex((item) => item.group === question.group)
+    : surveyConfig.questions.findIndex((item, itemIndex) => itemIndex > index && item.group === question.group);
+  if (swapIndex < 0) return;
+  const next = [...surveyConfig.questions];
+  [next[index], next[swapIndex]] = [next[swapIndex], next[index]];
+  surveyConfig.questions = next;
+  persistSurveyConfig();
+  renderAll();
+}
+
+function reorderQuestion(sourceId, targetId) {
+  if (!sourceId || !targetId || sourceId === targetId) return;
+  const source = questionById(sourceId);
+  const target = questionById(targetId);
+  if (!source || !target || source.group !== target.group) return;
+  const next = surveyConfig.questions.filter((question) => question.id !== sourceId);
+  const targetIndex = next.findIndex((question) => question.id === targetId);
+  next.splice(targetIndex, 0, source);
+  surveyConfig.questions = next;
+  persistSurveyConfig();
+  renderAll();
 }
 
 function renderGuideCard(guide, index) {
@@ -456,6 +776,241 @@ function renderFieldReference() {
   });
 }
 
+function responseRows() {
+  return JSON.parse(localStorage.getItem('technology-demand-surveys') || '[]');
+}
+
+function renderAdminApp() {
+  const admin = document.querySelector('#adminApp');
+  const responses = responseRows();
+  const visibleCount = surveyConfig.questions.filter((question) => question.visible).length;
+  const requiredCount = surveyConfig.questions.filter((question) => question.visible && question.required).length;
+  admin.innerHTML = `
+    <div class="admin-head">
+      <div>
+        <p class="guide-label">Admin</p>
+        <h2>설문 관리 시스템 v2</h2>
+        <p>HTML을 직접 수정하지 않고 문항 노출, 필수 여부, 문구, 예시, 순서를 조정하는 관리자 기반 구조입니다.</p>
+      </div>
+      <div class="admin-actions">
+        <button type="button" id="publishSurveyConfig">발행하기</button>
+        <button type="button" class="secondary" id="resetAdminConfig">기본값 복원</button>
+        <button type="button" id="exportAdminCsv">CSV 다운로드</button>
+      </div>
+    </div>
+
+    <div class="admin-stats">
+      <article><span>진행중 설문</span><strong>${surveyConfig.status === '공개' ? '1' : '0'}</strong></article>
+      <article><span>응답수</span><strong>${responses.length}</strong></article>
+      <article><span>노출 문항</span><strong>${visibleCount}</strong></article>
+      <article><span>필수 문항</span><strong>${requiredCount}</strong></article>
+      <article><span>설정 출처</span><strong class="small-stat">${escapeHtml(configSource)}</strong></article>
+    </div>
+
+    <div class="admin-grid">
+      <section class="admin-panel">
+        <h3>설문 관리</h3>
+        <label class="field compact">
+          <span>설문 상태</span>
+          <select id="surveyStatus">
+            ${['공개', '임시저장', '종료'].map((value) => `<option ${surveyConfig.status === value ? 'selected' : ''}>${value}</option>`).join('')}
+          </select>
+        </label>
+        <label class="field compact">
+          <span>URL</span>
+          <input id="publicUrl" value="${escapeHtml(surveyConfig.publicUrl)}" />
+        </label>
+        <label class="field compact">
+          <span>상단 안내문</span>
+          <textarea id="noticeText" rows="3">${escapeHtml(surveyConfig.notice)}</textarea>
+        </label>
+      </section>
+
+      <section class="admin-panel">
+        <h3>대분류/소분류 관리</h3>
+        <div class="category-admin-list">
+          ${CATEGORY_META.filter((item) => item.category !== '기타').map((item) => `
+            <details>
+              <summary>${escapeHtml(item.category)}</summary>
+              <p>${item.subcategories.map(escapeHtml).join(', ')}</p>
+            </details>
+          `).join('')}
+        </div>
+        <p class="admin-note">현재 단계에서는 카테고리 구조를 관리자 화면에 노출하고, 다음 단계에서 추가/삭제/수정 저장소와 연결합니다.</p>
+      </section>
+    </div>
+
+    <section class="admin-panel">
+      <div class="admin-section-title">
+        <h3>응답자 화면 기준 문항 관리</h3>
+        <p>실제 설문 흐름 그대로 보면서 각 문항의 노출/필수 여부를 체크합니다.</p>
+      </div>
+      <div class="admin-survey-preview">
+        ${renderAdminPreviewSection('1. 응답기관 기본정보', '기관/단체별 취합과 후속 연락을 위한 기본 정보입니다.', 'org')}
+        ${renderAdminPreviewSection('2. 기술수요 입력', '교통·도로·재난안전 분야 현장 문제와 적용 현장을 중심으로 간단히 작성해 주세요.', 'demand')}
+      </div>
+    </section>
+
+    <div class="admin-grid">
+      <section class="admin-panel">
+        <h3>작성예시 / Guidebook 관리</h3>
+        <p class="admin-note">작성예시와 Guidebook은 현재 데이터 구조로 분리되어 있으며, 관리자 편집/이미지/PDF 교체 연결을 위한 영역입니다.</p>
+        <div class="guide-admin-list">
+          ${GUIDEBOOKS.map((guide) => `<span>${escapeHtml(guide.title)}</span>`).join('')}
+        </div>
+      </section>
+      <section class="admin-panel">
+        <h3>응답관리</h3>
+        <p class="admin-note">검색, 기관별/분야별 필터, Excel/CSV/PDF 다운로드 확장 대상입니다.</p>
+        <div class="response-preview">
+          ${responses.slice(-3).reverse().map((item) => `
+            <article>
+              <strong>${escapeHtml(item.org || '기관명 없음')}</strong>
+              <span>${escapeHtml(item.submittedAt || '')}</span>
+            </article>
+          `).join('') || '<p class="admin-note">아직 저장된 응답이 없습니다.</p>'}
+        </div>
+      </section>
+    </div>
+  `;
+
+  bindAdminEvents();
+}
+
+function renderAdminPreviewSection(title, description, group) {
+  return `
+    <section class="admin-preview-section">
+      <header class="section-title">
+        <div>
+          <h2>${escapeHtml(title)}</h2>
+          <p>${escapeHtml(description)}</p>
+        </div>
+      </header>
+      <div class="admin-preview-grid">
+        ${allQuestions(group).map((question) => renderQuestionAdminRow(question)).join('')}
+      </div>
+    </section>
+  `;
+}
+
+function previewControl(question) {
+  if (question.type === 'select' || question.type === 'category' || question.type === 'subcategory') {
+    const label = question.type === 'category' ? '선택해 주세요' : (question.placeholder || '선택해 주세요');
+    return `<div class="admin-fake-control">${escapeHtml(label)}</div>`;
+  }
+  if (question.type === 'textarea') {
+    return `<div class="admin-fake-control textarea">${escapeHtml(question.placeholder || '내용을 입력해 주세요.')}</div>`;
+  }
+  return `<div class="admin-fake-control">${escapeHtml(question.placeholder || '입력란')}</div>`;
+}
+
+function renderQuestionAdminRow(question) {
+  return `
+    <article class="question-admin-row" draggable="true" data-question-row="${escapeHtml(question.id)}">
+      <div class="question-preview-main ${question.visible ? '' : 'is-hidden'}">
+        <label class="field compact">
+          <span>${escapeHtml(question.label)}${question.required ? '<b>*</b>' : ''}</span>
+          ${previewControl(question)}
+        </label>
+        ${question.help ? `<p class="question-help">${escapeHtml(question.help)}</p>` : ''}
+      </div>
+      <div class="question-toggles">
+        <label><input type="checkbox" data-question-visible="${escapeHtml(question.id)}" ${question.visible ? 'checked' : ''}/> 노출</label>
+        <label><input type="checkbox" data-question-required="${escapeHtml(question.id)}" ${question.required ? 'checked' : ''}/> 필수</label>
+      </div>
+      <div class="row-order-actions">
+        <button type="button" class="secondary mini" data-question-up="${escapeHtml(question.id)}">위로</button>
+        <button type="button" class="secondary mini" data-question-down="${escapeHtml(question.id)}">아래로</button>
+        <button type="button" class="secondary mini" data-question-edit="${escapeHtml(question.id)}">문구</button>
+      </div>
+      <div class="question-edit-panel" hidden data-question-edit-panel="${escapeHtml(question.id)}">
+        <label class="field compact">
+          <span>문항명</span>
+          <input data-question-label="${escapeHtml(question.id)}" value="${escapeHtml(question.label)}" />
+        </label>
+        <label class="field compact">
+          <span>Placeholder</span>
+          <input data-question-placeholder="${escapeHtml(question.id)}" value="${escapeHtml(question.placeholder || '')}" />
+        </label>
+        <label class="field compact full">
+          <span>도움말</span>
+          <input data-question-help="${escapeHtml(question.id)}" value="${escapeHtml(question.help || '')}" />
+        </label>
+      </div>
+    </article>
+  `;
+}
+
+function bindAdminEvents() {
+  document.querySelector('#resetAdminConfig')?.addEventListener('click', resetSurveyConfig);
+  document.querySelector('#exportAdminCsv')?.addEventListener('click', exportCsv);
+  document.querySelector('#publishSurveyConfig')?.addEventListener('click', async () => {
+    try {
+      await publishSurveyConfig();
+    } catch (error) {
+      show(`설정 발행 중 오류가 발생했습니다. (${error.message})`);
+    }
+  });
+  document.querySelector('#surveyStatus')?.addEventListener('change', (event) => {
+    surveyConfig.status = event.target.value;
+    persistSurveyConfig();
+    renderAll();
+  });
+  document.querySelector('#publicUrl')?.addEventListener('change', (event) => {
+    surveyConfig.publicUrl = event.target.value.trim();
+    persistSurveyConfig();
+    renderAll();
+  });
+  document.querySelector('#noticeText')?.addEventListener('change', (event) => {
+    surveyConfig.notice = event.target.value.trim();
+    persistSurveyConfig();
+    renderAll();
+  });
+
+  document.querySelectorAll('[data-question-visible]').forEach((inputEl) => {
+    inputEl.addEventListener('change', () => updateQuestion(inputEl.dataset.questionVisible, { visible: inputEl.checked }));
+  });
+  document.querySelectorAll('[data-question-required]').forEach((inputEl) => {
+    inputEl.addEventListener('change', () => updateQuestion(inputEl.dataset.questionRequired, { required: inputEl.checked }));
+  });
+  document.querySelectorAll('[data-question-label]').forEach((inputEl) => {
+    inputEl.addEventListener('change', () => updateQuestion(inputEl.dataset.questionLabel, { label: inputEl.value.trim() || inputEl.dataset.questionLabel }));
+  });
+  document.querySelectorAll('[data-question-placeholder]').forEach((inputEl) => {
+    inputEl.addEventListener('change', () => updateQuestion(inputEl.dataset.questionPlaceholder, { placeholder: inputEl.value }));
+  });
+  document.querySelectorAll('[data-question-help]').forEach((inputEl) => {
+    inputEl.addEventListener('change', () => updateQuestion(inputEl.dataset.questionHelp, { help: inputEl.value }));
+  });
+  document.querySelectorAll('[data-question-up]').forEach((button) => {
+    button.addEventListener('click', () => moveQuestion(button.dataset.questionUp, -1));
+  });
+  document.querySelectorAll('[data-question-down]').forEach((button) => {
+    button.addEventListener('click', () => moveQuestion(button.dataset.questionDown, 1));
+  });
+  document.querySelectorAll('[data-question-edit]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const panel = document.querySelector(`[data-question-edit-panel="${CSS.escape(button.dataset.questionEdit)}"]`);
+      if (panel) panel.hidden = !panel.hidden;
+    });
+  });
+  document.querySelectorAll('[data-question-row]').forEach((row) => {
+    row.addEventListener('dragstart', (event) => {
+      event.dataTransfer.setData('text/plain', row.dataset.questionRow);
+    });
+    row.addEventListener('dragover', (event) => {
+      event.preventDefault();
+      row.classList.add('drag-over');
+    });
+    row.addEventListener('dragleave', () => row.classList.remove('drag-over'));
+    row.addEventListener('drop', (event) => {
+      event.preventDefault();
+      row.classList.remove('drag-over');
+      reorderQuestion(event.dataTransfer.getData('text/plain'), row.dataset.questionRow);
+    });
+  });
+}
+
 function fieldByName(form, name) {
   return form.elements.namedItem(name) || form.querySelector(`[name="${CSS.escape(name)}"]`);
 }
@@ -491,9 +1046,11 @@ function updateSubcategoryOptions(index, category, selectedValue = '') {
   if (!element) return;
 
   const values = SUBCATEGORIES[category] || [];
+  const question = questionById('subcategory');
   element.disabled = values.length === 0;
+  element.required = !!question?.required;
   element.innerHTML = `
-    <option value="">${values.length ? '대분류에 따른 아이템을 선택해 주세요' : '대분류를 먼저 선택해 주세요'}</option>
+    <option value="">${values.length ? (question?.placeholder || '대분류에 따른 아이템을 선택해 주세요') : '대분류를 먼저 선택해 주세요'}</option>
     ${values.map((value) => `<option ${value === selectedValue ? 'selected' : ''}>${value}</option>`).join('')}
   `;
 }
@@ -522,6 +1079,7 @@ function applyGuideToDemand(guide) {
   setValue(form, `readiness-${index}`, draft.readiness);
   setValue(form, `background-${index}`, `${exampleText(draft.background)}\n\n기관/단체의 실제 추진 배경에 맞게 수정해 주세요.`);
   setValue(form, `problem-${index}`, `${exampleText(draft.problem)}\n\n기관/단체의 실제 현장 문제와 애로사항에 맞게 수정해 주세요.`);
+  setValue(form, `desiredOutcome-${index}`, `${exampleText(draft.solution)}\n\n해결되었으면 하는 점을 기관/단체 상황에 맞게 간단히 수정해 주세요.`);
   setValue(form, `solution-${index}`, `${exampleText(draft.solution)}\n\n기관/단체에서 필요로 하는 기술·서비스 내용에 맞게 수정해 주세요.`);
   setValue(form, `data-${index}`, `${exampleText(draft.data)}\n\n기관/단체가 보유하거나 연계 가능한 자료에 맞게 수정해 주세요.`);
   setValue(form, `expected-${index}`, `${exampleText(draft.expected)}\n\n기관/단체의 기대효과와 활용계획에 맞게 수정해 주세요.`);
@@ -560,6 +1118,7 @@ function addDemand() {
   const section = document.createElement('section');
   section.className = 'demand-card';
   section.dataset.index = index;
+  const demandFields = visibleQuestions('demand').map((question) => renderQuestionInput(question, index)).join('');
   section.innerHTML = `
     <div class="demand-top">
       <div>
@@ -570,28 +1129,14 @@ function addDemand() {
     </div>
 
     <div class="grid two">
-      ${input(`title-${index}`, '기술수요명', '예: V2X 기반 교차로 위험정보 실시간 연계 서비스')}
-      ${select(`category-${index}`, '대분류', CATEGORIES)}
-      ${subcategorySelect(index)}
-      ${input(`site-${index}`, '적용 대상/현장', '예: 주요 교차로, 지하차도, 공영주차장, 자율주행 시범지구')}
-      ${select(`type-${index}`, '수요 유형', DEMAND_TYPES, false, '미정')}
-      ${select(`urgency-${index}`, '추진 시급성', URGENCY, false, '미정')}
-      ${select(`readiness-${index}`, '검토 단계', READINESS, false, '미정')}
+      ${demandFields}
     </div>
-
-    ${textarea(`background-${index}`, '추진 배경', '관련 국정과제, 정부 보도자료, 지자체 정책, 현장 여건 등 수요가 나온 배경을 적어 주세요.', true)}
-    ${textarea(`problem-${index}`, '현장 문제 및 애로사항', '예: 자율주행 실증 인프라 부족, V2X 실시간 정보 연계 부족, 신기술 사전 검증 기반 부족 등', true)}
-    ${textarea(`solution-${index}`, '필요 기술/서비스 내용', '예: E2E AI 자율주행 데이터 파이프라인, V2X 정보연계, 디지털 트윈 시뮬레이터 등', true)}
-    ${textarea(`data-${index}`, '보유 데이터 및 연계 가능 자료', '예: 교차로 신호정보, 교통량, 정밀도로지도, CCTV, 돌발상황, 보행자 위험, 주행 데이터 등', false)}
-    ${textarea(`expected-${index}`, '기대효과 및 활용계획', '예: 실증 비용 절감, 안전사고 위험 최소화, 정책 사전검증, 자율주행 생태계 조성 등', true)}
-    ${textarea(`attachments-${index}`, '참고자료/링크', '기획서, 사진, 보고서, 기사, 기존 시스템 링크 등이 있으면 적어 주세요.', false, 3)}
-    ${textarea(`note-${index}`, '기타 의견', '추가로 전달할 사항을 자유롭게 적어 주세요.', false, 3)}
   `;
 
   section.querySelector('.remove').addEventListener('click', () => {
     if (document.querySelectorAll('.demand-card').length > 1) section.remove();
   });
-  section.querySelector(`[name="category-${index}"]`).addEventListener('change', (event) => {
+  section.querySelector(`[name="category-${index}"]`)?.addEventListener('change', (event) => {
     updateSubcategoryOptions(index, event.target.value);
   });
 
@@ -604,31 +1149,17 @@ function formValue(form, name) {
 
 function collect() {
   const form = document.querySelector('#survey');
-  const base = Object.fromEntries(orgFields.map(([name]) => [name, formValue(form, name)]));
+  const base = Object.fromEntries(allQuestions('org').map((question) => [question.id, formValue(form, question.id)]));
 
   return {
     responseId: `TRD-${new Date().toISOString().slice(0, 10).replaceAll('-', '')}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`,
     submittedAt: new Date().toISOString(),
     sourceSheet: SHEET_URL,
+    surveyStatus: surveyConfig.status,
     ...base,
     demands: [...document.querySelectorAll('.demand-card')].map((card) => {
       const i = card.dataset.index;
-      return {
-        title: formValue(form, `title-${i}`),
-        type: formValue(form, `type-${i}`),
-        category: formValue(form, `category-${i}`),
-        subcategory: formValue(form, `subcategory-${i}`),
-        urgency: formValue(form, `urgency-${i}`),
-        site: formValue(form, `site-${i}`),
-        readiness: formValue(form, `readiness-${i}`),
-        background: formValue(form, `background-${i}`),
-        problem: formValue(form, `problem-${i}`),
-        solution: formValue(form, `solution-${i}`),
-        data: formValue(form, `data-${i}`),
-        expected: formValue(form, `expected-${i}`),
-        attachments: formValue(form, `attachments-${i}`),
-        note: formValue(form, `note-${i}`),
-      };
+      return Object.fromEntries(allQuestions('demand').map((question) => [question.id, formValue(form, `${question.id}-${i}`)]));
     }),
   };
 }
@@ -638,6 +1169,83 @@ function show(message, ok = false) {
   box.hidden = false;
   box.className = `message ${ok ? 'ok' : ''}`;
   box.textContent = `${ok ? '완료' : '확인'}: ${message}`;
+}
+
+function sheetRowsFromPayload(payload, status = '제출') {
+  return payload.demands.map((demand, index) => ({
+    응답ID: payload.responseId,
+    제출일시: payload.submittedAt,
+    설문상태: payload.surveyStatus,
+    순번: index + 1,
+    '기관/단체명': payload.org,
+    부서명: payload.department,
+    담당자명: payload.writer,
+    연락처: payload.phone,
+    이메일: payload.email,
+    기술수요명: demand.title,
+    대분류: demand.category,
+    소분류: demand.subcategory,
+    '해결되었으면 하는 점': demand.desiredOutcome,
+    '도슨트투어 참가 희망': demand.docentTour,
+    '참고자료/링크': demand.attachments,
+    '기타 의견': demand.note,
+    '기술상담 희망': demand.consultation,
+    '실증사업 참여 의향': demand.pilotIntent,
+    '적용 대상/현장': demand.site,
+    '현장 문제 및 애로사항': demand.problem,
+    '수요 유형': demand.type,
+    '추진 시급성': demand.urgency,
+    '검토 단계': demand.readiness,
+    '추진 배경': demand.background,
+    '필요 기술/서비스 내용': demand.solution,
+    '보유 데이터 및 연계 가능 자료': demand.data,
+    '기대효과 및 활용계획': demand.expected,
+    제출상태: status,
+  }));
+}
+
+function sheetValuesFromPayload(payload, status = '제출') {
+  return sheetRowsFromPayload(payload, status).map((row) => SHEET_HEADERS.map((header) => row[header] || ''));
+}
+
+async function saveToGoogleSheet(payload) {
+  if (!GOOGLE_SHEET_WEBAPP_URL) return false;
+
+  await fetch(GOOGLE_SHEET_WEBAPP_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: {
+      'Content-Type': 'text/plain;charset=utf-8',
+    },
+    body: JSON.stringify({
+      spreadsheetUrl: SHEET_URL,
+      sheetName: GOOGLE_SHEET_NAME,
+      headers: SHEET_HEADERS,
+      rows: sheetValuesFromPayload(payload),
+      payload,
+    }),
+  });
+
+  return true;
+}
+
+function renderSurveyNotice() {
+  const notice = document.querySelector('.intro-note p');
+  if (notice) notice.textContent = surveyConfig.notice;
+}
+
+function renderDemandCards() {
+  document.querySelector('#demands').innerHTML = '';
+  demandCount = 0;
+  addDemand();
+}
+
+function renderAll() {
+  renderSurveyNotice();
+  renderAdminApp();
+  renderOrgFields();
+  renderFieldReference();
+  renderDemandCards();
 }
 
 function saveDraft() {
@@ -655,15 +1263,8 @@ async function submit(event) {
   }
 
   const payload = collect();
-  const invalid = payload.demands.findIndex((demand) => (
-    !demand.title ||
-    !demand.category ||
-    !demand.subcategory ||
-    !demand.site ||
-    !demand.problem ||
-    !demand.solution ||
-    !demand.expected
-  ));
+  const requiredDemandQuestions = visibleQuestions('demand').filter((question) => question.required);
+  const invalid = payload.demands.findIndex((demand) => requiredDemandQuestions.some((question) => !demand[question.id]));
 
   if (invalid >= 0) {
     show(`${invalid + 1}번 기술수요의 필수 문항을 모두 입력해 주세요.`);
@@ -673,6 +1274,7 @@ async function submit(event) {
   try {
     const url = window.SUPABASE_URL;
     const key = window.SUPABASE_ANON_KEY;
+    let savedRemotely = false;
 
     if (url && key) {
       const res = await fetch(`${url}/rest/v1/technology_demand_surveys`, {
@@ -687,7 +1289,14 @@ async function submit(event) {
       });
 
       if (!res.ok) throw new Error(await res.text());
-    } else {
+      savedRemotely = true;
+    }
+
+    if (await saveToGoogleSheet(payload)) {
+      savedRemotely = true;
+    }
+
+    if (!savedRemotely) {
       const saved = JSON.parse(localStorage.getItem('technology-demand-surveys') || '[]');
       saved.push(payload);
       localStorage.setItem('technology-demand-surveys', JSON.stringify(saved));
@@ -701,35 +1310,11 @@ async function submit(event) {
 
 function exportCsv() {
   const payload = collect();
-  const rows = payload.demands.map((demand, index) => ({
-    응답ID: payload.responseId,
-    제출일시: payload.submittedAt,
-    순번: index + 1,
-    기관명: payload.org,
-    부서명: payload.department,
-    작성자: payload.writer,
-    직위직책: payload.position,
-    연락처: payload.phone,
-    이메일: payload.email,
-    기술수요명: demand.title,
-    수요유형: demand.type,
-    대분류: demand.category,
-    소분류: demand.subcategory,
-    추진시급성: demand.urgency,
-    적용대상현장: demand.site,
-    검토단계: demand.readiness,
-    추진배경: demand.background,
-    현장문제및애로사항: demand.problem,
-    필요기술서비스내용: demand.solution,
-    보유데이터및연계자료: demand.data,
-    기대효과및활용계획: demand.expected,
-    참고자료링크: demand.attachments,
-    기타의견: demand.note,
-  }));
+  const rows = sheetRowsFromPayload(payload, 'CSV');
 
   if (!rows.length) return show('다운로드할 기술수요가 없습니다.');
 
-  const headers = Object.keys(rows[0]);
+  const headers = SHEET_HEADERS;
   const csv = [
     headers.join(','),
     ...rows.map((row) => headers.map((header) => `"${String(row[header] ?? '').replaceAll('"', '""')}"`).join(',')),
@@ -741,10 +1326,15 @@ function exportCsv() {
   link.click();
 }
 
-document.querySelector('#orgFields').innerHTML = orgFields.map((field) => input(...field)).join('');
-renderGuidebook();
-renderFieldReference();
-document.querySelector('#addDemand').addEventListener('click', addDemand);
-document.querySelector('#survey').addEventListener('submit', submit);
-document.querySelector('#saveDraft').addEventListener('click', saveDraft);
-addDemand();
+async function init() {
+  setupConfigRealtimeSync();
+  await loadPublishedConfig();
+  setupRemotePublishedSync();
+  renderGuidebook();
+  renderAll();
+  document.querySelector('#addDemand').addEventListener('click', addDemand);
+  document.querySelector('#survey').addEventListener('submit', submit);
+  document.querySelector('#saveDraft').addEventListener('click', saveDraft);
+}
+
+init();
