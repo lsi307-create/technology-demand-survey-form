@@ -9,23 +9,27 @@ const DOCENT_TOUR_SLOTS = [
   "10/22(목), 15:30~16:20('50)",
 ];
 
-const SHEET_HEADERS = [
+const BASE_SHEET_HEADERS = [
   '응답자ID',
   '제출일시',
   '설문상태',
-  '순번',
   '기관/단체명',
   '부서명',
   '담당자명',
   '연락처',
   '이메일',
+  'ITSK 세계총회 전시투어 참가 희망',
+  '전시투어 희망 시간대',
+  '제출상태',
+];
+
+const DEMAND_SHEET_HEADERS = [
+  '순번',
   '기술수요명',
   '대분류',
   '소분류',
+  '기타 소분류/상세',
   '해결되었으면 하는 점',
-  '도슨트투어 참가 희망',
-  '도슨트투어 희망 시간대',
-  '참고자료/링크',
   '기타 의견',
   '기술상담 희망',
   '실증사업 참여 의향',
@@ -38,7 +42,6 @@ const SHEET_HEADERS = [
   '필요 기술/서비스 내용',
   '보유 데이터 및 연계 가능 자료',
   '기대효과 및 활용계획',
-  '제출상태',
 ];
 
 const DEMAND_TYPES = [
@@ -286,7 +289,7 @@ const DOCENT_TOUR_OPTIONS = ['희망하지 않음', '희망'];
 const DEFAULT_SURVEY_CONFIG = {
   status: '공개',
   publicUrl: 'https://lsi307-create.github.io/technology-demand-survey-form/',
-  notice: '응답 내용은 향후 지자체협의체 회의, 기술상담, 도슨트투어, 실증사업, 사업화 연계 검토를 위한 기초자료로 활용됩니다. 참가자 여러분들께 소정의 선물을 보내드립니다.',
+  notice: '응답 내용은 향후 지자체협의체 회의, 기술상담, ITSK 세계총회 전시투어, 실증사업, 사업화 연계 검토를 위한 기초자료로 활용됩니다. 참가자 여러분들께 소정의 선물을 보내드립니다.',
   questions: [
     { id: 'org', group: 'org', label: '기관/단체명', placeholder: '예: OO시청, OO공사, OO협회', type: 'text', required: true, visible: true, help: '응답 기관 또는 단체명을 입력합니다.' },
     { id: 'department', group: 'org', label: '부서명', placeholder: '예: 교통정책과, 스마트도시과', type: 'text', required: true, visible: true, help: '후속 연락 가능한 부서명을 입력합니다.' },
@@ -302,22 +305,21 @@ const DEFAULT_SURVEY_CONFIG = {
     { id: 'desiredOutcome', group: 'demand', label: '해결되었으면 하는 점', placeholder: '예: 위험상황을 빠르게 감지하고 담당자에게 자동 알림이 가면 좋겠습니다.', type: 'textarea', required: false, visible: true, help: '기술명보다 원하는 개선 결과를 자유롭게 적습니다.' },
     { id: 'consultation', group: 'demand', label: '기술상담 희망', placeholder: '', type: 'select', options: PARTICIPATION_OPTIONS, required: false, visible: false, help: '후속 기술상담 희망 여부입니다.' },
     { id: 'pilotIntent', group: 'demand', label: '실증사업 참여 의향', placeholder: '', type: 'select', options: PARTICIPATION_OPTIONS, required: false, visible: false, help: '향후 실증사업 연계 검토용입니다.' },
-    { id: 'docentTour', group: 'demand', label: '도슨트투어 참가 희망', placeholder: '', type: 'select', options: DOCENT_TOUR_OPTIONS, required: true, visible: true, help: '도슨트투어 참여 수요 파악용입니다.' },
     { id: 'type', group: 'demand', label: '수요 유형', placeholder: '', type: 'select', options: DEMAND_TYPES, required: false, visible: false, help: '관리자에서 필요 시 ON 처리합니다.' },
     { id: 'urgency', group: 'demand', label: '추진 시급성', placeholder: '', type: 'select', options: URGENCY, required: false, visible: false, help: '선택 입력입니다.' },
     { id: 'readiness', group: 'demand', label: '검토 단계', placeholder: '', type: 'select', options: READINESS, required: false, visible: false, help: '응답 부담을 줄이기 위해 기본 OFF입니다.' },
     { id: 'background', group: 'demand', label: '추진 배경', placeholder: '관련 정책, 보도자료, 현장 여건 등', type: 'textarea', required: false, visible: false, help: '기본 OFF. 필요할 때 관리자에서 켭니다.' },
-    { id: 'solution', group: 'demand', label: '필요 기술/서비스 내용', placeholder: '예: AI 감지, V2X 정보연계, 디지털 트윈 검증 등', type: 'textarea', required: false, visible: false, help: '기본 OFF. 기술명이 명확한 조사에서만 사용합니다.' },
+    { id: 'solution', group: 'demand', label: '필요 기술/서비스 내용', placeholder: '예: AI 감지, V2X 정보연계, 디지털 트윈 검증 등', type: 'textarea', required: false, visible: true, help: '선택 입력입니다. 필요한 기술이나 서비스가 떠오르면 적어 주세요.' },
     { id: 'data', group: 'demand', label: '보유 데이터 및 연계 가능 자료', placeholder: '예: CCTV, 교통량, 신호정보, 민원 데이터 등', type: 'textarea', required: false, visible: false, help: '기본 OFF. 데이터 연계 조사 시 사용합니다.' },
     { id: 'expected', group: 'demand', label: '기대효과 및 활용계획', placeholder: '예: 사고 예방, 행정 효율화, 실증 비용 절감 등', type: 'textarea', required: false, visible: false, help: '기본 OFF. 응답 부담을 줄이기 위해 숨깁니다.' },
-    { id: 'attachments', group: 'demand', label: '참고자료/링크', placeholder: '기획서, 사진, 보고서, 기사, 기존 시스템 링크 등이 있으면 적어 주세요.', type: 'textarea', rows: 3, required: false, visible: true, help: '선택 입력입니다.' },
+    { id: 'attachments', group: 'demand', label: '참고자료/링크', placeholder: '기획서, 사진, 보고서, 기사, 기존 시스템 링크 등이 있으면 적어 주세요.', type: 'textarea', rows: 3, required: false, visible: false, help: '관리자가 필요할 때 ON 처리합니다.' },
     { id: 'note', group: 'demand', label: '기타 의견', placeholder: '추가로 전달할 사항을 자유롭게 적어 주세요.', type: 'textarea', rows: 3, required: false, visible: true, help: '선택 입력입니다.' },
   ],
 };
 
-const STORAGE_KEY = 'technology-demand-survey-admin-config-v4';
-const PUBLISHED_CONFIG_KEY = 'technology-demand-survey-published-config-v4';
-const CONFIG_SYNC_CHANNEL = 'technology-demand-survey-config-sync-v4';
+const STORAGE_KEY = 'technology-demand-survey-admin-config-v7';
+const PUBLISHED_CONFIG_KEY = 'technology-demand-survey-published-config-v7';
+const CONFIG_SYNC_CHANNEL = 'technology-demand-survey-config-sync-v7';
 const CONFIG_SLUG = '2026-traffic-road-safety-demand';
 let surveyConfig = loadSurveyConfig();
 let configSource = '로컬 초안';
@@ -368,6 +370,16 @@ function subcategorySelect(index, category = '', selectedValue = '', question = 
   `;
 }
 
+function renderSubcategoryOtherDetails(index) {
+  return `
+    <label class="field full other-subcategory-field" data-other-subcategory="${index}" hidden>
+      <span>기타 소분류/상세<b>*</b></span>
+      <input name="subcategoryOther-${index}" placeholder="예: 싱크홀 예측, 농어촌 통학 이동지원, 터널 내 사고 감지 등 직접 입력해 주세요." disabled />
+      <em>대분류 또는 소분류에서 기타를 선택한 경우, 검토 가능한 키워드가 남도록 간단히 적어 주세요.</em>
+    </label>
+  `;
+}
+
 function textarea(name, label, placeholder = '', required = false, rows = 4) {
   return `
     <label class="field full">
@@ -390,23 +402,43 @@ function renderQuestionInput(question, index = null) {
   return input(name, question.label, question.placeholder, question.type || 'text', question.required);
 }
 
-function renderDocentTourDetails(index) {
+function renderTourSection() {
   return `
-    <section class="docent-tour-panel full" data-docent-panel="${index}" hidden>
-      <div class="docent-tour-copy">
-        <span class="eyebrow">2026 강릉 ITS 세계총회 안내</span>
-        <h4>2026년 10월 19일(월) ~ 23일(금)</h4>
-        <p>강릉 올림픽 파크</p>
-        <a href="${DOCENT_TOUR_URL}" target="_blank" rel="noopener">안내페이지 열기</a>
+    <header class="section-title tour-title">
+      <div>
+        <h2>3. ITSK 세계총회 전시투어 안내</h2>
+        <p>기술수요 작성 후 전시투어 참여 의향을 한 번만 선택해 주세요.</p>
       </div>
+    </header>
+    <div class="privacy-box tour-info-table">
+      <p><strong>행사명 :</strong> ITSK 세계총회 전시투어</p>
+      <p><strong>대상 :</strong> 지자체·공공기관 ITS/교통/스마트시티/모빌리티 등 업무 담당자 및 관계자</p>
+      <p><strong>기간/운영 :</strong> 2026. 10. 21.(수) ~ 22.(목) / 수요기반 상시</p>
+      <p><strong>규모 :</strong> 회차별 소규모 그룹 운영(사전 신청 기반)</p>
+      <p><strong>장소 :</strong> 강릉 올림픽 파크</p>
+    </div>
+    <div class="grid two tour-choice-grid">
       <label class="field">
-        <span>희망하는 시간대<b>*</b></span>
-        <select name="docentTourSlot-${index}" data-docent-slot="${index}" disabled>
+        <span>ITSK 세계총회 전시투어 참가 희망<b>*</b></span>
+        <select name="docentTour" required>
+          <option value="">선택해 주세요</option>
+          ${DOCENT_TOUR_OPTIONS.map((option) => `<option>${option}</option>`).join('')}
+        </select>
+      </label>
+      <label class="field" data-tour-slot-wrap hidden>
+        <span>희망하는 전시투어 시간대<b>*</b></span>
+        <select name="docentTourSlot" disabled>
           <option value="">시간대를 선택해 주세요</option>
           ${DOCENT_TOUR_SLOTS.map((slot) => `<option>${slot}</option>`).join('')}
         </select>
       </label>
-    </section>
+    </div>
+    <div class="tour-action-panel" data-tour-action-panel hidden>
+      <details class="official-link-toggle" open>
+        <summary>ITS 세계총회 공식홈페이지 보기</summary>
+        <a href="${DOCENT_TOUR_URL}" target="_blank" rel="noopener">공식홈페이지 열기</a>
+      </details>
+    </div>
   `;
 }
 
@@ -529,6 +561,7 @@ async function publishSurveyConfig() {
     configSource = '원격 발행본';
   } else {
     localStorage.setItem(PUBLISHED_CONFIG_KEY, JSON.stringify(payload));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
     configSource = '로컬 발행본';
   }
 
@@ -791,6 +824,33 @@ function renderFieldReference() {
     <div>
       <p class="guide-label">주요분야(안)</p>
       <h3>대분류와 소분류를 확인한 뒤 기술수요를 작성해 주세요.</h3>
+      <p class="field-reference-note">한 개의 수요 항목은 <b>대분류 1개 + 소분류 1개 + 의견 1건</b>을 기준으로 저장됩니다.</p>
+    </div>
+    <div class="answer-architecture" aria-label="답변 구조 안내">
+      <article>
+        <span>1</span>
+        <strong>대분류 선택</strong>
+        <p>분야 1~4 또는 기타 중 대표 분야를 먼저 고릅니다.</p>
+      </article>
+      <article>
+        <span>2</span>
+        <strong>소분류 선택</strong>
+        <p>선택한 대분류에 연결된 세부 아이템을 고릅니다.</p>
+      </article>
+      <article>
+        <span>3</span>
+        <strong>의견 작성</strong>
+        <p>해결되었으면 하는 점을 현장 문제 중심으로 작성합니다.</p>
+      </article>
+      <article>
+        <span>+</span>
+        <strong>복수 답변</strong>
+        <p>소분류별·대분류별 의견이 다르면 기술수요를 추가해 각각 작성합니다.</p>
+      </article>
+    </div>
+    <div class="multi-answer-rule">
+      <strong>복수 답변 처리 기준</strong>
+      <p>같은 대분류 안에서 여러 소분류 의견이 있으면 <b>＋ 기술수요 추가</b>로 항목을 늘린 뒤 대분류는 그대로 두고 소분류만 바꿔 작성해 주세요. 여러 대분류에 걸친 현안은 대표 대분류로 1건 작성하거나, 분야별 검토가 필요하면 대분류별로 항목을 추가해 주세요.</p>
     </div>
     <div class="major-field-list">
       ${CATEGORY_META.filter((item) => item.category !== '기타').map((item) => `
@@ -804,6 +864,9 @@ function renderFieldReference() {
           <button type="button" class="field-draft-button" data-field-draft="${escapeHtml(item.category)}">
             이 분야 수요 초안 선택
           </button>
+          <button type="button" class="field-add-button" data-field-add="${escapeHtml(item.category)}">
+            이 대분류 항목 추가
+          </button>
         </article>
       `).join('')}
     </div>
@@ -811,6 +874,9 @@ function renderFieldReference() {
 
   reference.querySelectorAll('[data-field-draft]').forEach((button) => {
     button.addEventListener('click', () => applyFieldDraft(button.dataset.fieldDraft));
+  });
+  reference.querySelectorAll('[data-field-add]').forEach((button) => {
+    button.addEventListener('click', () => addDemand({ category: button.dataset.fieldAdd, scroll: true }));
   });
 }
 
@@ -1085,25 +1151,45 @@ function updateSubcategoryOptions(index, category, selectedValue = '') {
 
   const values = SUBCATEGORIES[category] || [];
   const question = questionById('subcategory');
+  const nextSelectedValue = selectedValue || (values.length === 1 && values[0] === '기타' ? '기타' : '');
   element.disabled = values.length === 0;
   element.required = !!question?.required;
   element.innerHTML = `
     <option value="">${values.length ? (question?.placeholder || '대분류에 따른 아이템을 선택해 주세요') : '대분류를 먼저 선택해 주세요'}</option>
-    ${values.map((value) => `<option ${value === selectedValue ? 'selected' : ''}>${value}</option>`).join('')}
+    ${values.map((value) => `<option ${value === nextSelectedValue ? 'selected' : ''}>${value}</option>`).join('')}
   `;
+  updateSubcategoryOtherDetails(index);
 }
 
-function updateDocentTourDetails(index) {
+function updateSubcategoryOtherDetails(index) {
   const form = document.querySelector('#survey');
-  const docentTour = formValue(form, `docentTour-${index}`);
-  const panel = document.querySelector(`[data-docent-panel="${CSS.escape(String(index))}"]`);
-  const slot = fieldByName(form, `docentTourSlot-${index}`);
+  const category = formValue(form, `category-${index}`);
+  const subcategory = formValue(form, `subcategory-${index}`);
+  const panel = document.querySelector(`[data-other-subcategory="${CSS.escape(String(index))}"]`);
+  const inputEl = fieldByName(form, `subcategoryOther-${index}`);
+  const isOther = category === '기타' || subcategory === '기타';
+
+  if (panel) panel.hidden = !isOther;
+  if (inputEl) {
+    inputEl.disabled = !isOther;
+    inputEl.required = isOther;
+    if (!isOther) inputEl.value = '';
+  }
+}
+
+function updateTourDetails() {
+  const form = document.querySelector('#survey');
+  const docentTour = formValue(form, 'docentTour');
+  const panel = document.querySelector('[data-tour-action-panel]');
+  const slotWrap = document.querySelector('[data-tour-slot-wrap]');
+  const slot = fieldByName(form, 'docentTourSlot');
   const isWanted = docentTour === '희망';
 
   if (panel) panel.hidden = !isWanted;
+  if (slotWrap) slotWrap.hidden = !isWanted;
   if (slot) {
     slot.disabled = !isWanted;
-    slot.required = false;
+    slot.required = isWanted;
     if (!isWanted) slot.value = '';
   }
 }
@@ -1127,6 +1213,7 @@ function applyGuideToDemand(guide) {
   setValue(form, `type-${index}`, draft.type);
   setValue(form, `category-${index}`, category);
   updateSubcategoryOptions(index, category, subcategory);
+  updateSubcategoryOtherDetails(index);
   setValue(form, `urgency-${index}`, draft.urgency);
   setValue(form, `site-${index}`, exampleText(draft.site));
   setValue(form, `readiness-${index}`, draft.readiness);
@@ -1166,42 +1253,94 @@ function applyFieldDraft(category) {
   applyGuideToDemand(guide);
 }
 
-function addDemand() {
+function scrollDemandCardIntoView(section) {
+  section.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+}
+
+function renderDemandAddMenu(index) {
+  return `
+    <div class="demand-add-menu" data-demand-add-menu="${index}" hidden>
+      <p>추가할 대분류를 선택해 주세요.</p>
+      <div>
+        ${CATEGORIES.map((category) => `
+          <button type="button" class="secondary mini" data-demand-add-category="${escapeHtml(category)}">
+            ${escapeHtml(category.replace('분야 ', ''))}
+          </button>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function toggleDemandAddMenu(index) {
+  document.querySelectorAll('[data-demand-add-menu]').forEach((menu) => {
+    menu.hidden = menu.dataset.demandAddMenu !== String(index) ? true : !menu.hidden;
+  });
+}
+
+function addDemand(options = {}) {
   const index = demandCount++;
   const section = document.createElement('section');
   section.className = 'demand-card';
   section.dataset.index = index;
   const demandFields = visibleQuestions('demand').map((question) => (
-    question.id === 'docentTour'
-      ? `${renderQuestionInput(question, index)}${renderDocentTourDetails(index)}`
+    question.id === 'subcategory'
+        ? `${renderQuestionInput(question, index)}${renderSubcategoryOtherDetails(index)}`
       : renderQuestionInput(question, index)
   )).join('');
   section.innerHTML = `
     <div class="demand-top">
       <div>
         <p class="eyebrow">수요 항목 ${index + 1}</p>
-        <h3>기술수요 초안</h3>
+        <h3>기술수요 작성</h3>
       </div>
-      <button type="button" class="ghost remove">삭제</button>
+      <div class="demand-card-actions">
+        <button type="button" class="secondary add-inline">추가</button>
+        <button type="button" class="ghost remove">삭제</button>
+      </div>
     </div>
+    ${renderDemandAddMenu(index)}
 
     <div class="grid two">
       ${demandFields}
     </div>
   `;
 
+  section.insertAdjacentHTML('afterbegin', `
+    <p class="demand-rule-note">
+      이 항목은 대분류 1개와 소분류 1개에 대한 의견 1건입니다. 같은 대분류의 다른 소분류 또는 다른 대분류 의견은 항목을 추가해 별도로 작성해 주세요.
+    </p>
+  `);
   section.querySelector('.remove').addEventListener('click', () => {
     if (document.querySelectorAll('.demand-card').length > 1) section.remove();
+  });
+  section.querySelector('.add-inline').addEventListener('click', () => {
+    toggleDemandAddMenu(index);
+  });
+  section.querySelectorAll('[data-demand-add-category]').forEach((button) => {
+    button.addEventListener('click', () => {
+      toggleDemandAddMenu(index);
+      addDemand({ category: button.dataset.demandAddCategory, scroll: true });
+    });
   });
   section.querySelector(`[name="category-${index}"]`)?.addEventListener('change', (event) => {
     updateSubcategoryOptions(index, event.target.value);
   });
-  section.querySelector(`[name="docentTour-${index}"]`)?.addEventListener('change', () => {
-    updateDocentTourDetails(index);
+  section.querySelector(`[name="subcategory-${index}"]`)?.addEventListener('change', () => {
+    updateSubcategoryOtherDetails(index);
   });
 
   document.querySelector('#demands').append(section);
-  updateDocentTourDetails(index);
+  if (options.category) {
+    const categoryField = fieldByName(document.querySelector('#survey'), `category-${index}`);
+    if (categoryField) {
+      categoryField.value = options.category;
+      updateSubcategoryOptions(index, options.category);
+    }
+  }
+  updateSubcategoryOtherDetails(index);
+  const hasMultipleCards = document.querySelectorAll('.demand-card').length > 1;
+  if (options.scroll || hasMultipleCards) scrollDemandCardIntoView(section);
 }
 
 function formValue(form, name) {
@@ -1218,11 +1357,13 @@ function collect() {
     sourceSheet: SHEET_URL,
     surveyStatus: surveyConfig.status,
     ...base,
+    docentTour: formValue(form, 'docentTour'),
+    docentTourSlot: formValue(form, 'docentTourSlot'),
     demands: [...document.querySelectorAll('.demand-card')].map((card) => {
       const i = card.dataset.index;
       return {
         ...Object.fromEntries(allQuestions('demand').map((question) => [question.id, formValue(form, `${question.id}-${i}`)])),
-        docentTourSlot: formValue(form, `docentTourSlot-${i}`),
+        subcategoryOther: formValue(form, `subcategoryOther-${i}`),
       };
     }),
   };
@@ -1235,24 +1376,30 @@ function show(message, ok = false) {
   box.textContent = `${ok ? '완료' : '확인'}: ${message}`;
 }
 
-function sheetRowsFromPayload(payload, status = '제출') {
-  return payload.demands.map((demand, index) => ({
+function baseSheetRowFromPayload(payload, status = '제출') {
+  return {
     응답자ID: payload.responseId,
     제출일시: payload.submittedAt,
     설문상태: payload.surveyStatus,
-    순번: index + 1,
     '기관/단체명': payload.org,
     부서명: payload.department,
     담당자명: payload.writer,
     연락처: payload.phone,
     이메일: payload.email,
+    'ITSK 세계총회 전시투어 참가 희망': payload.docentTour,
+    '전시투어 희망 시간대': payload.docentTourSlot,
+    제출상태: status,
+  };
+}
+
+function demandSheetRowFromDemand(demand, index) {
+  return {
+    순번: index + 1,
     기술수요명: demand.title,
     대분류: demand.category,
     소분류: demand.subcategory,
+    '기타 소분류/상세': demand.subcategoryOther,
     '해결되었으면 하는 점': demand.desiredOutcome,
-    '도슨트투어 참가 희망': demand.docentTour,
-    '도슨트투어 희망 시간대': demand.docentTourSlot,
-    '참고자료/링크': demand.attachments,
     '기타 의견': demand.note,
     '기술상담 희망': demand.consultation,
     '실증사업 참여 의향': demand.pilotIntent,
@@ -1265,12 +1412,32 @@ function sheetRowsFromPayload(payload, status = '제출') {
     '필요 기술/서비스 내용': demand.solution,
     '보유 데이터 및 연계 가능 자료': demand.data,
     '기대효과 및 활용계획': demand.expected,
-    제출상태: status,
-  }));
+  };
+}
+
+function sheetHeadersFromPayload(payload) {
+  return [
+    ...BASE_SHEET_HEADERS,
+    ...payload.demands.flatMap((_, index) => (
+      DEMAND_SHEET_HEADERS.map((header) => `수요${index + 1}_${header}`)
+    )),
+  ];
+}
+
+function sheetRowsFromPayload(payload, status = '제출') {
+  const row = baseSheetRowFromPayload(payload, status);
+  payload.demands.forEach((demand, index) => {
+    const demandRow = demandSheetRowFromDemand(demand, index);
+    DEMAND_SHEET_HEADERS.forEach((header) => {
+      row[`수요${index + 1}_${header}`] = demandRow[header] || '';
+    });
+  });
+  return [row];
 }
 
 function sheetValuesFromPayload(payload, status = '제출') {
-  return sheetRowsFromPayload(payload, status).map((row) => SHEET_HEADERS.map((header) => row[header] || ''));
+  const headers = sheetHeadersFromPayload(payload);
+  return sheetRowsFromPayload(payload, status).map((row) => headers.map((header) => row[header] || ''));
 }
 
 async function saveToGoogleSheet(payload) {
@@ -1285,7 +1452,7 @@ async function saveToGoogleSheet(payload) {
     body: JSON.stringify({
       spreadsheetUrl: SHEET_URL,
       sheetName: GOOGLE_SHEET_NAME,
-      headers: SHEET_HEADERS,
+      headers: sheetHeadersFromPayload(payload),
       rows: sheetValuesFromPayload(payload),
       payload,
     }),
@@ -1305,6 +1472,14 @@ function renderDemandCards() {
   addDemand();
 }
 
+function renderTour() {
+  const section = document.querySelector('#tourSection');
+  if (!section) return;
+  section.innerHTML = renderTourSection();
+  fieldByName(document.querySelector('#survey'), 'docentTour')?.addEventListener('change', updateTourDetails);
+  updateTourDetails();
+}
+
 function renderAll() {
   applyViewMode();
   renderSurveyNotice();
@@ -1312,6 +1487,7 @@ function renderAll() {
   renderOrgFields();
   renderFieldReference();
   renderDemandCards();
+  renderTour();
 }
 
 function saveDraft() {
@@ -1329,6 +1505,21 @@ async function submit(event) {
   }
 
   const payload = collect();
+  const missingOrg = visibleQuestions('org').find((question) => question.required && !payload[question.id]);
+  if (missingOrg) {
+    show(`${missingOrg.label}을(를) 입력해 주세요.`);
+    return;
+  }
+
+  const invalidEmailQuestion = visibleQuestions('org').find((question) => {
+    const element = fieldByName(document.querySelector('#survey'), question.id);
+    return question.type === 'email' && element?.value && !element.validity.valid;
+  });
+  if (invalidEmailQuestion) {
+    show(`${invalidEmailQuestion.label} 형식을 확인해 주세요.`);
+    return;
+  }
+
   const requiredDemandQuestions = visibleQuestions('demand').filter((question) => question.required);
   const invalid = payload.demands.findIndex((demand) => requiredDemandQuestions.some((question) => !demand[question.id]));
 
@@ -1337,9 +1528,21 @@ async function submit(event) {
     return;
   }
 
-  const missingDocentSlot = payload.demands.findIndex((demand) => demand.docentTour === '희망' && !demand.docentTourSlot);
-  if (missingDocentSlot >= 0) {
-    show(`${missingDocentSlot + 1}번 기술수요의 도슨트투어 희망 시간대를 선택해 주세요.`);
+  const missingOtherDetail = payload.demands.findIndex((demand) => (
+    demand.category === '기타' || demand.subcategory === '기타'
+  ) && !demand.subcategoryOther);
+  if (missingOtherDetail >= 0) {
+    show(`${missingOtherDetail + 1}번 기술수요의 기타 소분류/상세 내용을 입력해 주세요.`);
+    return;
+  }
+
+  if (!payload.docentTour) {
+    show('ITSK 세계총회 전시투어 참가 희망 여부를 선택해 주세요.');
+    return;
+  }
+
+  if (payload.docentTour === '희망' && !payload.docentTourSlot) {
+    show('희망하는 전시투어 시간대를 선택해 주세요.');
     return;
   }
 
@@ -1386,7 +1589,7 @@ function exportCsv() {
 
   if (!rows.length) return show('다운로드할 기술수요가 없습니다.');
 
-  const headers = SHEET_HEADERS;
+  const headers = sheetHeadersFromPayload(payload);
   const csv = [
     headers.join(','),
     ...rows.map((row) => headers.map((header) => `"${String(row[header] ?? '').replaceAll('"', '""')}"`).join(',')),

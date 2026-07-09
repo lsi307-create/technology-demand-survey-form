@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>교통·도로·재난안전 분야 기술수요조사</title>
     <link rel="icon" href="data:," />
-    <link rel="stylesheet" href="./src/styles.css?v=admin-system-9" />
+    <link rel="stylesheet" href="./src/styles.css?v=admin-system-13" />
   </head>
   <body>
     <main class="page">
@@ -18,7 +18,7 @@
         <img class="hero-illustration" src="./src/assets/traffic-city-line.svg" alt="" aria-hidden="true" />
       </section>
       <section class="intro-note">
-        <p>응답 내용은 향후 지자체협의체 회의, 기술상담, 도슨트투어, 실증사업, 사업화 연계 검토를 위한 기초자료로 활용됩니다. 참가자 여러분들께 소정의 선물을 보내드립니다.</p>
+        <p>응답 내용은 향후 지자체협의체 회의, 기술상담, ITSK 세계총회 전시투어, 실증사업, 사업화 연계 검토를 위한 기초자료로 활용됩니다. 참가자 여러분들께 소정의 선물을 보내드립니다.</p>
       </section>
       <section class="survey-meta" aria-label="조사 안내">
         <div>
@@ -40,7 +40,7 @@
       </section>
       <section id="adminApp" class="admin-shell" aria-label="설문 관리자"></section>
       <section id="guidebook" class="guidebook" aria-label="작성 참고 가이드북"></section>
-      <form id="survey" class="card">
+      <form id="survey" class="card" novalidate>
         <header class="section-title">
           <div>
             <h2>1. 응답기관 기본정보</h2>
@@ -56,11 +56,13 @@
           <button type="button" class="secondary" id="addDemand">＋ 기술수요 추가</button>
         </header>
         <section id="fieldReference" class="field-reference" aria-label="주요분야 안내"></section>
+        <p class="demand-scroll-hint">기술수요가 여러 건이면 카드가 옆으로 추가됩니다. 좌우로 넘기며 각 항목을 작성해 주세요.</p>
         <div id="demands"></div>
+        <section id="tourSection" class="tour-section" aria-label="ITSK 세계총회 전시투어 안내"></section>
         <section class="privacy-card">
-          <h2>5. 개인정보 수집 및 활용 동의</h2>
+          <h2>4. 개인정보 수집 및 활용 동의</h2>
           <div class="privacy-box">
-            <p><strong>수집 목적 :</strong> 기술수요 분석, 지자체협의체 운영, 기업 매칭, 기술상담, 도슨트투어 및 후속 연계 프로그램 운영</p>
+            <p><strong>수집 목적 :</strong> 기술수요 분석, 지자체협의체 운영, 기업 매칭, 기술상담, ITSK 세계총회 전시투어 및 후속 연계 프로그램 운영</p>
             <p><strong>수집 항목 :</strong> 기관명, 부서명, 담당자명, 연락처, 이메일, 기술수요 응답내용</p>
             <p><strong>보유 기간 :</strong> 조사 및 후속 프로그램 운영 종료 후 내부 기준에 따라 관리</p>
           </div>
@@ -75,8 +77,8 @@
       </form>
     </main>
     <script>
-      window.GOOGLE_SHEET_WEBAPP_URL = '';
+      window.GOOGLE_SHEET_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbzFI7i6J53dRTV3pBewxLzIXPkfuMfeuFAJazCH4Pi6OTgIrnaBEO_ruYgp8cG2ckEk9Q/exec';
     </script>
-    <script type="module" src="./src/main.js?v=admin-system-9"></script>
+    <script type="module" src="./src/main.js?v=admin-system-13"></script>
   </body>
 </html>
