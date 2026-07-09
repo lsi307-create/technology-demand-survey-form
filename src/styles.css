@@ -1,6 +1,7 @@
 :root { font-family: 'Pretendard', 'Noto Sans KR', system-ui, sans-serif; color: #0f2740; background: #f1f4f7; }
 * { box-sizing: border-box; }
 body { margin: 0; }
+[hidden] { display: none !important; }
 body[data-view="respondent"] #adminApp { display: none; }
 body[data-view="admin"] #guidebook,
 body[data-view="admin"] #survey { display: none; }

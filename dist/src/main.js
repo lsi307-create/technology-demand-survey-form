@@ -1164,10 +1164,9 @@ function updateSubcategoryOptions(index, category, selectedValue = '') {
 function updateSubcategoryOtherDetails(index) {
   const form = document.querySelector('#survey');
   const category = formValue(form, `category-${index}`);
-  const subcategory = formValue(form, `subcategory-${index}`);
   const panel = document.querySelector(`[data-other-subcategory="${CSS.escape(String(index))}"]`);
   const inputEl = fieldByName(form, `subcategoryOther-${index}`);
-  const isOther = category === '기타' || subcategory === '기타';
+  const isOther = category === '기타';
 
   if (panel) panel.hidden = !isOther;
   if (inputEl) {
@@ -1529,7 +1528,7 @@ async function submit(event) {
   }
 
   const missingOtherDetail = payload.demands.findIndex((demand) => (
-    demand.category === '기타' || demand.subcategory === '기타'
+    demand.category === '기타'
   ) && !demand.subcategoryOther);
   if (missingOtherDetail >= 0) {
     show(`${missingOtherDetail + 1}번 기술수요의 기타 소분류/상세 내용을 입력해 주세요.`);
