@@ -189,8 +189,14 @@ textarea { resize: vertical; line-height: 1.55; }
 .tour-info-table p { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 12px; align-items: start; }
 .tour-info-table strong { min-width: 0; color: #0f3565; }
 .tour-choice-grid { align-items: end; }
-.tour-action-panel { margin-top: 14px; padding: 14px 16px; border: 1px solid #cfe0ef; border-radius: 8px; background: #f3f8fc; }
+.tour-action-panel { margin-top: 14px; padding: 18px; border: 1px solid #cfe0ef; border-radius: 14px; background: #f3f8fc; }
 .tour-action-panel[hidden] { display: none; }
+.tour-action-grid { display: grid; grid-template-columns: minmax(0, .9fr) minmax(280px, 1.1fr); gap: 16px; align-items: end; }
+.tour-link-group { min-height: 100%; padding: 14px; border: 1px solid #d8e8f5; border-radius: 12px; background: white; }
+.tour-link-group strong { display: block; margin-bottom: 10px; color: #0f3565; font-size: 14px; }
+.tour-links { display: flex; flex-wrap: wrap; gap: 8px; }
+.tour-links a { display: inline-flex; align-items: center; justify-content: center; min-height: 34px; padding: 8px 10px; border: 1px solid #b9d9ec; border-radius: 999px; background: #f7fcff; color: #0f65a8; font-size: 13px; font-weight: 900; text-decoration: none; }
+.tour-links a:hover { background: #eef8ff; }
 .eyebrow { margin: 0 0 4px; color: #5b6f86; font-size: 13px; font-weight: 900; }
 .source-note { margin: 0 10px 0 auto; padding: 8px 10px; border-radius: 999px; background: #eef8f5; color: #0f766e; font-size: 13px; font-weight: 900; }
 button, .secondary.link { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 0; border-radius: 14px; padding: 13px 18px; background: #0f766e; color: white; font: inherit; font-weight: 900; text-decoration: none; cursor: pointer; }
@@ -211,7 +217,7 @@ button:disabled { opacity: .55; cursor: progress; }
 .actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 26px; }
 .actions button { min-width: 118px; }
 @media (max-width: 900px) { .survey-meta, .admin-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } .guide-overview, .admin-grid, .admin-preview-grid, .question-admin-row, .question-edit-panel { grid-template-columns: 1fr; } }
-@media (max-width: 760px) { .page { padding: 10px 10px 48px; } .hero, .card, .guidebook, .admin-shell { padding: 24px; border-radius: 18px; } .survey-meta, .admin-stats { grid-template-columns: 1fr; padding: 14px; border-radius: 20px; } .survey-meta div { min-height: auto; } .admin-head, .admin-section-title, .process-grid, .major-field-list, .answer-architecture, .guidebook-head, .section-title, .demand-top { align-items: flex-start; flex-wrap: wrap; grid-template-columns: 1fr; } .admin-actions { width: 100%; justify-content: stretch; } .admin-actions button { flex: 1; } .demand-card-actions { width: 100%; justify-content: flex-end; } .demand-add-menu { max-width: none; margin-left: 0; } .major-field-list article { padding-bottom: 14px; } .major-field-list strong { padding-right: 0; } .field-draft-button, .field-add-button { position: static; margin-top: 10px; } .guidebook-head .secondary, .guide-actions { width: 100%; flex-basis: 100%; } .guide-panel dl, .grid.two, .guide-effects, .docent-tour-panel { grid-template-columns: 1fr; } .source-note { order: 3; width: 100%; margin: 10px 0 0; text-align: center; } .demands-head .secondary { margin-left: 0; width: 100%; } .actions > * { width: 100%; } }
+@media (max-width: 760px) { .page { padding: 10px 10px 48px; } .hero, .card, .guidebook, .admin-shell { padding: 24px; border-radius: 18px; } .survey-meta, .admin-stats { grid-template-columns: 1fr; padding: 14px; border-radius: 20px; } .survey-meta div { min-height: auto; } .admin-head, .admin-section-title, .process-grid, .major-field-list, .answer-architecture, .guidebook-head, .section-title, .demand-top { align-items: flex-start; flex-wrap: wrap; grid-template-columns: 1fr; } .admin-actions { width: 100%; justify-content: stretch; } .admin-actions button { flex: 1; } .demand-card-actions { width: 100%; justify-content: flex-end; } .demand-add-menu { max-width: none; margin-left: 0; } .major-field-list article { padding-bottom: 14px; } .major-field-list strong { padding-right: 0; } .field-draft-button, .field-add-button { position: static; margin-top: 10px; } .guidebook-head .secondary, .guide-actions { width: 100%; flex-basis: 100%; } .guide-panel dl, .grid.two, .guide-effects, .docent-tour-panel, .tour-action-grid { grid-template-columns: 1fr; } .source-note { order: 3; width: 100%; margin: 10px 0 0; text-align: center; } .demands-head .secondary { margin-left: 0; width: 100%; } .actions > * { width: 100%; } }
 
 /* Modern campaign-form refresh */
 :root { color: #172033; background: #eef3f7; }

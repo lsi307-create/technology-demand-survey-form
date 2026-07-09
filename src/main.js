@@ -1,7 +1,11 @@
 const SHEET_URL = 'https://docs.google.com/spreadsheets/d/1d4beTVvbY3y-I8OvuNd8IF42wApwvkAXCdLv5LEfzaE/edit?gid=0#gid=0';
 const GOOGLE_SHEET_WEBAPP_URL = window.GOOGLE_SHEET_WEBAPP_URL || '';
 const GOOGLE_SHEET_NAME = '시트1';
-const DOCENT_TOUR_URL = 'https://2026itsworldcongress.org/ITS/120002/event/custom/event.do?map=30';
+const DOCENT_TOUR_LINKS = [
+  ['공식홈페이지', 'https://2026itsworldcongress.org/ITS/120002/index.do'],
+  ['공식 & 사교행사', 'https://2026itsworldcongress.org/ITS/120002/event/custom/event.do?map=30'],
+  ['프로그램 안내', 'https://2026itsworldcongress.org/ITS/120002/event/custom/event.do?map=03'],
+];
 const DOCENT_TOUR_SLOTS = [
   "10/21(수), 10:30~11:20('50)",
   "10/21(수), 15:30~16:20('50)",
@@ -407,7 +411,7 @@ function renderTourSection() {
     <header class="section-title tour-title">
       <div>
         <h2>3. ITSK 세계총회 전시투어 안내</h2>
-        <p>기술수요 작성 후 전시투어 참여 의향을 한 번만 선택해 주세요.</p>
+        <p>기술수요 작성 후 전시투어 참여 의향을 선택해 주세요.</p>
       </div>
     </header>
     <div class="privacy-box tour-info-table">
@@ -425,19 +429,23 @@ function renderTourSection() {
           ${DOCENT_TOUR_OPTIONS.map((option) => `<option>${option}</option>`).join('')}
         </select>
       </label>
-      <label class="field" data-tour-slot-wrap hidden>
-        <span>희망하는 전시투어 시간대<b>*</b></span>
-        <select name="docentTourSlot" disabled>
-          <option value="">시간대를 선택해 주세요</option>
-          ${DOCENT_TOUR_SLOTS.map((slot) => `<option>${slot}</option>`).join('')}
-        </select>
-      </label>
     </div>
     <div class="tour-action-panel" data-tour-action-panel hidden>
-      <details class="official-link-toggle" open>
-        <summary>ITS 세계총회 공식홈페이지 보기</summary>
-        <a href="${DOCENT_TOUR_URL}" target="_blank" rel="noopener">공식홈페이지 열기</a>
-      </details>
+      <div class="tour-action-grid">
+        <div class="tour-link-group">
+          <strong>ITS 세계총회 공식홈페이지 보기</strong>
+          <div class="tour-links">
+            ${DOCENT_TOUR_LINKS.map(([label, url]) => `<a href="${url}" target="_blank" rel="noopener">${label}</a>`).join('')}
+          </div>
+        </div>
+        <label class="field" data-tour-slot-wrap>
+          <span>희망하는 전시투어 시간대<b>*</b></span>
+          <select name="docentTourSlot" disabled>
+            <option value="">시간대를 선택해 주세요</option>
+            ${DOCENT_TOUR_SLOTS.map((slot) => `<option>${slot}</option>`).join('')}
+          </select>
+        </label>
+      </div>
     </div>
   `;
 }
