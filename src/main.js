@@ -1,6 +1,8 @@
 const SHEET_URL = 'https://docs.google.com/spreadsheets/d/1d4beTVvbY3y-I8OvuNd8IF42wApwvkAXCdLv5LEfzaE/edit?gid=0#gid=0';
 const GOOGLE_SHEET_WEBAPP_URL = window.GOOGLE_SHEET_WEBAPP_URL || '';
 const GOOGLE_SHEET_NAME = '시트1';
+const ADMIN_ACCESS_KEY = window.ADMIN_ACCESS_KEY || 'itsk0449';
+const ADMIN_AUTH_SESSION_KEY = 'technology-demand-survey-admin-auth-v1';
 const DOCENT_TOUR_LINKS = [
   ['공식홈페이지', 'https://2026itsworldcongress.org/ITS/120002/index.do'],
   ['공식 & 사교행사', 'https://2026itsworldcongress.org/ITS/120002/event/custom/event.do?map=30'],
@@ -919,8 +921,55 @@ function responseRows() {
   return JSON.parse(localStorage.getItem('technology-demand-surveys') || '[]');
 }
 
+function isAdminAuthenticated() {
+  return sessionStorage.getItem(ADMIN_AUTH_SESSION_KEY) === 'ok';
+}
+
+function renderAdminGate() {
+  const admin = document.querySelector('#adminApp');
+  if (!admin) return;
+  admin.innerHTML = `
+    <section class="admin-gate" aria-label="관리자 접근 인증">
+      <div>
+        <p class="guide-label">Admin Security</p>
+        <h2>관리자 접근키 입력</h2>
+        <p>설문 문항, 발행 설정, 응답 관리는 관리자 접근키 확인 후 사용할 수 있습니다.</p>
+      </div>
+      <form id="adminAuthForm" class="admin-gate-form">
+        <label class="field compact">
+          <span>관리자 API Key</span>
+          <input id="adminAccessKey" type="password" autocomplete="off" placeholder="관리자 키를 입력해 주세요" required />
+        </label>
+        <button type="submit">관리자 페이지 열기</button>
+      </form>
+      <p id="adminAuthMessage" class="admin-auth-message" hidden></p>
+    </section>
+  `;
+
+  admin.querySelector('#adminAuthForm')?.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const inputEl = admin.querySelector('#adminAccessKey');
+    const message = admin.querySelector('#adminAuthMessage');
+    if (inputEl?.value === ADMIN_ACCESS_KEY) {
+      sessionStorage.setItem(ADMIN_AUTH_SESSION_KEY, 'ok');
+      renderAdminApp();
+      return;
+    }
+    if (message) {
+      message.hidden = false;
+      message.textContent = '관리자 API Key를 확인해 주세요.';
+    }
+    inputEl?.focus();
+    inputEl?.select();
+  });
+}
+
 function renderAdminApp() {
   const admin = document.querySelector('#adminApp');
+  if (!isAdminAuthenticated()) {
+    renderAdminGate();
+    return;
+  }
   const responses = responseRows();
   const visibleCount = surveyConfig.questions.filter((question) => question.visible).length;
   const requiredCount = surveyConfig.questions.filter((question) => question.visible && question.required).length;
@@ -935,6 +984,7 @@ function renderAdminApp() {
         <button type="button" id="publishSurveyConfig">발행하기</button>
         <button type="button" class="secondary" id="resetAdminConfig">기본값 복원</button>
         <button type="button" id="exportAdminCsv">CSV 다운로드</button>
+        <button type="button" class="secondary" id="lockAdminConfig">잠금</button>
       </div>
     </div>
 
@@ -1081,6 +1131,10 @@ function renderQuestionAdminRow(question) {
 }
 
 function bindAdminEvents() {
+  document.querySelector('#lockAdminConfig')?.addEventListener('click', () => {
+    sessionStorage.removeItem(ADMIN_AUTH_SESSION_KEY);
+    renderAdminGate();
+  });
   document.querySelector('#resetAdminConfig')?.addEventListener('click', resetSurveyConfig);
   document.querySelector('#exportAdminCsv')?.addEventListener('click', exportCsv);
   document.querySelector('#publishSurveyConfig')?.addEventListener('click', async () => {
