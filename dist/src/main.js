@@ -7,10 +7,14 @@ const DOCENT_TOUR_LINKS = [
   ['프로그램 안내', 'https://2026itsworldcongress.org/ITS/120002/event/custom/event.do?map=03'],
 ];
 const DOCENT_TOUR_SLOTS = [
+  "10/19(월), 15:30~16:20('50)",
+  "10/20(화), 10:30~11:20('50)",
+  "10/20(화), 15:30~16:20('50)",
   "10/21(수), 10:30~11:20('50)",
   "10/21(수), 15:30~16:20('50)",
   "10/22(목), 10:30~11:20('50)",
   "10/22(목), 15:30~16:20('50)",
+  "10/23(금), 10:30~11:20('50)",
 ];
 
 const BASE_SHEET_HEADERS = [
@@ -317,7 +321,7 @@ const DEFAULT_SURVEY_CONFIG = {
     { id: 'data', group: 'demand', label: '보유 데이터 및 연계 가능 자료', placeholder: '예: CCTV, 교통량, 신호정보, 민원 데이터 등', type: 'textarea', required: false, visible: false, help: '기본 OFF. 데이터 연계 조사 시 사용합니다.' },
     { id: 'expected', group: 'demand', label: '기대효과 및 활용계획', placeholder: '예: 사고 예방, 행정 효율화, 실증 비용 절감 등', type: 'textarea', required: false, visible: false, help: '기본 OFF. 응답 부담을 줄이기 위해 숨깁니다.' },
     { id: 'attachments', group: 'demand', label: '참고자료/링크', placeholder: '기획서, 사진, 보고서, 기사, 기존 시스템 링크 등이 있으면 적어 주세요.', type: 'textarea', rows: 3, required: false, visible: false, help: '관리자가 필요할 때 ON 처리합니다.' },
-    { id: 'note', group: 'demand', label: '기타 의견', placeholder: '추가로 전달할 사항을 자유롭게 적어 주세요.', type: 'textarea', rows: 3, required: false, visible: true, help: '선택 입력입니다.' },
+    { id: 'note', group: 'demand', label: '기타 의견', placeholder: '추가로 전달할 사항을 자유롭게 적어 주세요. (희망매칭기업, 기관 등)', type: 'textarea', rows: 3, required: false, visible: true, help: '선택 입력입니다.' },
   ],
 };
 
@@ -414,12 +418,21 @@ function renderTourSection() {
         <p>기술수요 작성 후 전시투어 참여 의향을 선택해 주세요.</p>
       </div>
     </header>
-    <div class="privacy-box tour-info-table">
-      <p><strong>행사명 :</strong> ITSK 세계총회 전시투어</p>
-      <p><strong>대상 :</strong> 지자체·공공기관 ITS/교통/스마트시티/모빌리티 등 업무 담당자 및 관계자</p>
-      <p><strong>기간/운영 :</strong> 2026. 10. 21.(수) ~ 22.(목) / 수요기반 상시</p>
-      <p><strong>규모 :</strong> 회차별 소규모 그룹 운영(사전 신청 기반)</p>
-      <p><strong>장소 :</strong> 강릉 올림픽 파크</p>
+    <div class="tour-info-layout">
+      <div class="privacy-box tour-info-table">
+        <p><strong>행사명 :</strong> ITSK 세계총회 전시투어</p>
+        <p><strong>대상 :</strong> 지자체·공공기관 ITS/교통/스마트시티/모빌리티 등 업무 담당자 및 관계자</p>
+        <p><strong>기간/운영 :</strong> 2026. 10. 19.(월) ~ 23.(금) / 수요기반 상시</p>
+        <p><strong>규모 :</strong> 회차별 소규모 그룹 운영(사전 신청 기반)</p>
+        <p><strong>장소 :</strong> 강릉 올림픽 파크</p>
+      </div>
+      <aside class="tour-docent-card" aria-label="전시 연계 도슨트 투어 설명">
+        <strong>ㅇ (전시 연계 도슨트 투어)</strong>
+        <ul>
+          <li>ITS 세계총회 전시관 내 주요 전시부스를 방문하여 교통·도로·재난안전 분야 우수기술 및 적용사례 소개</li>
+          <li>기술수요조사 결과를 반영한 맞춤형 전시투어를 통해 수요기관의 기술 이해도 제고 및 후속 협력 기회 발굴</li>
+        </ul>
+      </aside>
     </div>
     <div class="grid two tour-choice-grid">
       <label class="field">
@@ -473,6 +486,7 @@ function mergeQuestions(savedQuestions = []) {
   const merged = DEFAULT_SURVEY_CONFIG.questions.map((question) => ({
     ...question,
     ...(savedById.get(question.id) || {}),
+    ...(question.id === 'note' ? { placeholder: question.placeholder } : {}),
   }));
   const knownIds = new Set(merged.map((question) => question.id));
   return [
