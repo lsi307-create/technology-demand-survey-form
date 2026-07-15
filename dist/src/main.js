@@ -1464,6 +1464,26 @@ function show(message, ok = false) {
   box.textContent = `${ok ? '완료' : '확인'}: ${message}`;
 }
 
+function clearInvalidHighlights() {
+  document.querySelectorAll('.field.is-invalid, .consent.is-invalid').forEach((element) => {
+    element.classList.remove('is-invalid');
+  });
+}
+
+function highlightInvalidField(fieldOrName) {
+  clearInvalidHighlights();
+  const form = document.querySelector('#survey');
+  const element = typeof fieldOrName === 'string' ? fieldByName(form, fieldOrName) : fieldOrName;
+  if (!element) return;
+
+  const target = element.closest('.field, .consent') || element;
+  target.classList.add('is-invalid');
+  target.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
+  window.setTimeout(() => {
+    if (typeof element.focus === 'function') element.focus({ preventScroll: true });
+  }, 350);
+}
+
 function baseSheetRowFromPayload(payload, status = '제출') {
   return {
     응답자ID: payload.responseId,
@@ -1586,9 +1606,12 @@ function saveDraft() {
 
 async function submit(event) {
   event.preventDefault();
+  clearInvalidHighlights();
 
-  if (!document.querySelector('#consent').checked) {
+  const consent = document.querySelector('#consent');
+  if (!consent.checked) {
     show('개인정보 수집·이용 및 기술수요 검토 목적 활용 동의가 필요합니다.');
+    highlightInvalidField(consent);
     return;
   }
 
@@ -1596,6 +1619,7 @@ async function submit(event) {
   const missingOrg = visibleQuestions('org').find((question) => question.required && !payload[question.id]);
   if (missingOrg) {
     show(`${missingOrg.label}을(를) 입력해 주세요.`);
+    highlightInvalidField(missingOrg.id);
     return;
   }
 
@@ -1605,14 +1629,20 @@ async function submit(event) {
   });
   if (invalidEmailQuestion) {
     show(`${invalidEmailQuestion.label} 형식을 확인해 주세요.`);
+    highlightInvalidField(invalidEmailQuestion.id);
     return;
   }
 
   const requiredDemandQuestions = visibleQuestions('demand').filter((question) => question.required);
-  const invalid = payload.demands.findIndex((demand) => requiredDemandQuestions.some((question) => !demand[question.id]));
+  let invalidQuestion = null;
+  const invalid = payload.demands.findIndex((demand) => {
+    invalidQuestion = requiredDemandQuestions.find((question) => !demand[question.id]) || null;
+    return !!invalidQuestion;
+  });
 
   if (invalid >= 0) {
     show(`${invalid + 1}번 기술수요의 필수 문항을 모두 입력해 주세요.`);
+    if (invalidQuestion) highlightInvalidField(`${invalidQuestion.id}-${invalid}`);
     return;
   }
 
@@ -1621,16 +1651,19 @@ async function submit(event) {
   ) && !demand.subcategoryOther);
   if (missingOtherDetail >= 0) {
     show(`${missingOtherDetail + 1}번 기술수요의 기타 소분류/상세 내용을 입력해 주세요.`);
+    highlightInvalidField(`subcategoryOther-${missingOtherDetail}`);
     return;
   }
 
   if (!payload.docentTour) {
     show('ITSK 세계총회 전시투어 참가 희망 여부를 선택해 주세요.');
+    highlightInvalidField('docentTour');
     return;
   }
 
   if (payload.docentTour === '희망' && !payload.docentTourSlot) {
     show('희망하는 전시투어 시간대를 선택해 주세요.');
+    highlightInvalidField('docentTourSlot');
     return;
   }
 
