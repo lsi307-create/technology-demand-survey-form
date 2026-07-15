@@ -303,7 +303,7 @@ const DEFAULT_SURVEY_CONFIG = {
     { id: 'department', group: 'org', label: '부서명', placeholder: '예: 교통정책과, 스마트도시과', type: 'text', required: true, visible: true, help: '후속 연락 가능한 부서명을 입력합니다.' },
     { id: 'writer', group: 'org', label: '담당자명', placeholder: '', type: 'text', required: true, visible: true, help: '응답 작성 담당자명입니다.' },
     { id: 'position', group: 'org', label: '직위', placeholder: '', type: 'text', required: false, visible: false, help: '선택 입력입니다.' },
-    { id: 'phone', group: 'org', label: '연락처', placeholder: '010-0000-0000', type: 'tel', required: true, visible: true, help: '기술상담 또는 후속 확인 연락처입니다.' },
+    { id: 'phone', group: 'org', label: '연락처', placeholder: '01000000000', type: 'tel', required: true, visible: true, help: '숫자만 입력해 주세요.' },
     { id: 'email', group: 'org', label: '이메일', placeholder: 'name@example.go.kr', type: 'email', required: true, visible: true, help: '응답 확인 및 후속 안내용 이메일입니다.' },
     { id: 'title', group: 'demand', label: '기술수요명', placeholder: '예: V2X 기반 교차로 위험정보 실시간 연계 서비스', type: 'text', required: false, visible: true, help: '간단한 제목이 있으면 입력합니다.' },
     { id: 'category', group: 'demand', label: '대분류', placeholder: '', type: 'category', required: true, visible: true, help: '분야 1~4 또는 기타 중 선택합니다.' },
@@ -345,10 +345,11 @@ function applyViewMode() {
 }
 
 function input(name, label, placeholder = '', type = 'text', required = true) {
+  const attrs = name === 'phone' ? 'inputmode="numeric" pattern="[0-9]*" autocomplete="tel"' : '';
   return `
     <label class="field">
       <span>${label}${required ? '<b>*</b>' : ''}</span>
-      <input name="${name}" type="${type}" placeholder="${placeholder}" ${required ? 'required' : ''}/>
+      <input name="${name}" type="${type}" placeholder="${placeholder}" ${attrs} ${required ? 'required' : ''}/>
     </label>
   `;
 }
@@ -465,6 +466,17 @@ function renderTourSection() {
 
 function renderOrgFields() {
   document.querySelector('#orgFields').innerHTML = visibleQuestions('org').map((question) => renderQuestionInput(question)).join('');
+  bindOrgFieldConstraints();
+}
+
+function bindOrgFieldConstraints() {
+  const form = document.querySelector('#survey');
+  const phone = fieldByName(form, 'phone');
+  if (phone) {
+    phone.addEventListener('input', () => {
+      phone.value = phone.value.replace(/\D/g, '');
+    });
+  }
 }
 
 function escapeHtml(value) {
@@ -487,6 +499,7 @@ function mergeQuestions(savedQuestions = []) {
     ...question,
     ...(savedById.get(question.id) || {}),
     ...(question.id === 'note' ? { placeholder: question.placeholder } : {}),
+    ...(question.id === 'phone' ? { placeholder: question.placeholder, help: question.help } : {}),
   }));
   const knownIds = new Set(merged.map((question) => question.id));
   return [
@@ -1534,7 +1547,7 @@ async function submit(event) {
 
   const invalidEmailQuestion = visibleQuestions('org').find((question) => {
     const element = fieldByName(document.querySelector('#survey'), question.id);
-    return question.type === 'email' && element?.value && !element.validity.valid;
+    return question.type === 'email' && element?.value && (!element.value.includes('@') || !element.validity.valid);
   });
   if (invalidEmailQuestion) {
     show(`${invalidEmailQuestion.label} 형식을 확인해 주세요.`);
