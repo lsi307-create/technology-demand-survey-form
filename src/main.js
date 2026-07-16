@@ -308,9 +308,9 @@ const DEFAULT_SURVEY_CONFIG = {
     { id: 'position', group: 'org', label: '직위', placeholder: '', type: 'text', required: false, visible: false, help: '선택 입력입니다.' },
     { id: 'phone', group: 'org', label: '연락처', placeholder: '01000000000', type: 'tel', required: true, visible: true, help: '숫자만 입력해 주세요.' },
     { id: 'email', group: 'org', label: '이메일', placeholder: 'name@example.go.kr', type: 'email', required: true, visible: true, help: '응답 확인 및 후속 안내용 이메일입니다.' },
-    { id: 'title', group: 'demand', label: '기술수요명', placeholder: '예: V2X 기반 교차로 위험정보 실시간 연계 서비스', type: 'text', required: false, visible: true, help: '간단한 제목이 있으면 입력합니다.' },
     { id: 'category', group: 'demand', label: '대분류', placeholder: '', type: 'category', required: true, visible: true, help: '분야 1~4 또는 기타 중 선택합니다.' },
     { id: 'subcategory', group: 'demand', label: '소분류', placeholder: '대분류에 따른 아이템을 선택해 주세요', type: 'subcategory', required: false, visible: true, help: '모르면 기타 또는 미선택 상태로 둘 수 있습니다.' },
+    { id: 'title', group: 'demand', label: '기술수요명', placeholder: '예: V2X 기반 교차로 위험정보 실시간 연계 서비스', type: 'text', required: false, visible: true, help: '간단한 제목이 있으면 입력합니다.' },
     { id: 'site', group: 'demand', label: '적용 대상/현장', placeholder: '예: 주요 교차로, 지하차도, 공영주차장, 자율주행 시범지구', type: 'text', required: false, visible: false, help: '기술이 적용될 현장을 적습니다.' },
     { id: 'problem', group: 'demand', label: '현장 문제 및 애로사항', placeholder: '예: 상습 정체, 침수 위험, 교통약자 이동 불편, 실시간 정보 연계 부족 등', type: 'textarea', required: false, visible: false, help: '현재 가장 불편하거나 해결이 필요한 문제만 적어도 됩니다.' },
     { id: 'desiredOutcome', group: 'demand', label: '해결되었으면 하는 점', placeholder: '예: 위험상황을 빠르게 감지하고 담당자에게 자동 알림이 가면 좋겠습니다.', type: 'textarea', required: false, visible: true, help: '기술명보다 원하는 개선 결과를 자유롭게 적습니다.' },
@@ -866,34 +866,30 @@ function renderFieldReference() {
   reference.innerHTML = `
     <div>
       <p class="guide-label">주요분야(안)</p>
-      <h3>대분류와 소분류를 확인한 뒤 기술수요를 작성해 주세요.</h3>
-      <p class="field-reference-note">한 개의 수요 항목은 <b>대분류 1개 + 소분류 1개 + 의견 1건</b>을 기준으로 저장됩니다.</p>
+      <h3>작성요령</h3>
+      <p class="field-reference-lead"><b>분야를 선택해서 작성해 주세요.</b></p>
     </div>
     <div class="answer-architecture" aria-label="답변 구조 안내">
       <article>
         <span>1</span>
         <strong>대분류 선택</strong>
-        <p>분야 1~4 또는 기타 중 대표 분야를 먼저 고릅니다.</p>
+        <p>분야 1~4 또는 기타</p>
       </article>
       <article>
         <span>2</span>
         <strong>소분류 선택</strong>
-        <p>선택한 대분류에 연결된 세부 아이템을 고릅니다.</p>
+        <p>의견을 남길 아이템 1개</p>
       </article>
       <article>
         <span>3</span>
         <strong>의견 작성</strong>
-        <p>해결되었으면 하는 점을 현장 문제 중심으로 작성합니다.</p>
+        <p>해결되었으면 하는 점, 필요 기술/서비스 내용, 기타 의견</p>
       </article>
       <article>
         <span>+</span>
-        <strong>복수 답변</strong>
-        <p>소분류별·대분류별 의견이 다르면 기술수요를 추가해 각각 작성합니다.</p>
+        <strong>복수 의견</strong>
+        <p>카드를 추가해 따로 작성</p>
       </article>
-    </div>
-    <div class="multi-answer-rule">
-      <strong>복수 답변 처리 기준</strong>
-      <p>같은 대분류 안에서 여러 소분류 의견이 있으면 <b>＋ 기술수요 추가</b>로 항목을 늘린 뒤 대분류는 그대로 두고 소분류만 바꿔 작성해 주세요. 여러 대분류에 걸친 현안은 대표 대분류로 1건 작성하거나, 분야별 검토가 필요하면 대분류별로 항목을 추가해 주세요.</p>
     </div>
     <div class="major-field-list">
       ${CATEGORY_META.filter((item) => item.category !== '기타').map((item) => `
@@ -1254,6 +1250,7 @@ function updateSubcategoryOptions(index, category, selectedValue = '') {
     ${values.map((value) => `<option ${value === nextSelectedValue ? 'selected' : ''}>${value}</option>`).join('')}
   `;
   updateSubcategoryOtherDetails(index);
+  updateDemandOpinionAvailability(index);
 }
 
 function updateSubcategoryOtherDetails(index) {
@@ -1269,6 +1266,21 @@ function updateSubcategoryOtherDetails(index) {
     inputEl.required = isOther;
     if (!isOther) inputEl.value = '';
   }
+}
+
+function updateDemandOpinionAvailability(index) {
+  const form = document.querySelector('#survey');
+  const category = formValue(form, `category-${index}`);
+  const subcategory = formValue(form, `subcategory-${index}`);
+  const opinion = fieldByName(form, `desiredOutcome-${index}`);
+  const isAvailable = category === '기타' || !!subcategory;
+
+  if (!opinion) return;
+  opinion.disabled = !isAvailable;
+  opinion.placeholder = isAvailable
+    ? '예: 위험상황을 빠르게 감지하고 담당자에게 자동 알림이 가면 좋겠습니다.'
+    : '소분류까지 선택하시면 입력할 수 있습니다.';
+  if (!isAvailable) opinion.value = '';
 }
 
 function updateTourDetails() {
@@ -1317,6 +1329,7 @@ function applyGuideToDemand(guide) {
   setValue(form, `solution-${index}`, `${exampleText(draft.solution)}\n\n기관/단체에서 필요로 하는 기술·서비스 내용에 맞게 수정해 주세요.`);
   setValue(form, `data-${index}`, `${exampleText(draft.data)}\n\n기관/단체가 보유하거나 연계 가능한 자료에 맞게 수정해 주세요.`);
   setValue(form, `expected-${index}`, `${exampleText(draft.expected)}\n\n기관/단체의 기대효과와 활용계획에 맞게 수정해 주세요.`);
+  updateDemandOpinionAvailability(index);
 
   card.querySelector('.source-note')?.remove();
   card.querySelector('.demand-top').insertAdjacentHTML(
@@ -1385,12 +1398,13 @@ function addDemand(options = {}) {
   section.innerHTML = `
     <div class="demand-top">
       <div>
-        <p class="eyebrow">수요 항목 ${index + 1}</p>
-        <h3>기술수요 작성</h3>
+        <p class="eyebrow">기술수요 의견</p>
+        <h3>기술수요조사 작성페이지</h3>
       </div>
       <div class="demand-card-actions">
         <button type="button" class="secondary add-inline">추가</button>
         <button type="button" class="ghost remove">삭제</button>
+        <p class="demand-add-help">대분류 아래 여러 의견이 있으신 경우, 추가해서 작성부탁드립니다.</p>
       </div>
     </div>
     ${renderDemandAddMenu(index)}
@@ -1402,7 +1416,7 @@ function addDemand(options = {}) {
 
   section.insertAdjacentHTML('afterbegin', `
     <p class="demand-rule-note">
-      이 항목은 대분류 1개와 소분류 1개에 대한 의견 1건입니다. 같은 대분류의 다른 소분류 또는 다른 대분류 의견은 항목을 추가해 별도로 작성해 주세요.
+      기술수요 의견은 소분류까지 선택하시면 활성화됩니다.
     </p>
   `);
   section.querySelector('.remove').addEventListener('click', () => {
@@ -1422,6 +1436,7 @@ function addDemand(options = {}) {
   });
   section.querySelector(`[name="subcategory-${index}"]`)?.addEventListener('change', () => {
     updateSubcategoryOtherDetails(index);
+    updateDemandOpinionAvailability(index);
   });
 
   document.querySelector('#demands').append(section);
@@ -1433,6 +1448,7 @@ function addDemand(options = {}) {
     }
   }
   updateSubcategoryOtherDetails(index);
+  updateDemandOpinionAvailability(index);
   const hasMultipleCards = document.querySelectorAll('.demand-card').length > 1;
   if (options.scroll || hasMultipleCards) scrollDemandCardIntoView(section);
 }

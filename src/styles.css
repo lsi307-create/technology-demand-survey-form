@@ -80,6 +80,8 @@ h1 { margin: 22px 0 14px; font-size: clamp(30px, 4vw, 42px); line-height: 1.16; 
 .process-card ul { margin: 0; padding-left: 18px; color: #24344a; line-height: 1.6; font-size: 14px; font-weight: 800; }
 .field-reference { margin: -6px 0 20px; padding: 18px; border: 1px solid #dce6ef; border-radius: 18px; background: #f8fbfe; }
 .field-reference h3 { margin: 4px 0 14px; color: #0f3565; font-size: 18px; line-height: 1.4; }
+.field-reference-lead { margin: -4px 0 14px; color: #4b5f76; font-size: 14px; line-height: 1.55; font-weight: 800; }
+.field-reference-lead b { color: #0f766e; }
 .field-reference-note { margin: -6px 0 14px; color: #55677d; font-size: 13px; line-height: 1.55; font-weight: 800; }
 .field-reference-note b { color: #0f766e; }
 .answer-architecture { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin: 14px 0; }
@@ -170,9 +172,18 @@ textarea { resize: vertical; line-height: 1.55; }
 .demand-rule-note { margin: 0 0 14px; padding: 12px 14px; border-radius: 10px; background: #f1f7fb; color: #4f6175; font-size: 13px; line-height: 1.55; font-weight: 800; }
 .demand-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
 .demand-top h3 { margin: 0; color: #0f3565; font-size: 21px; }
-.demand-card-actions { display: flex; gap: 8px; align-items: center; }
+.demand-card-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: flex-end; }
 .demand-card-actions .secondary,
 .demand-card-actions .ghost { min-height: 38px; padding: 9px 12px; border-radius: 10px; }
+.demand-add-help {
+  flex-basis: 100%;
+  margin: 2px 0 0;
+  color: #0f766e;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.45;
+  text-align: right;
+}
 .demand-add-menu { margin: -4px 0 16px auto; max-width: 560px; padding: 14px; border: 1px solid #d7e5ef; border-radius: 12px; background: #f7fbff; box-shadow: 0 16px 30px rgba(19, 42, 68, .08); }
 .demand-add-menu[hidden] { display: none; }
 .demand-add-menu p { margin: 0 0 10px; color: #4f6175; font-size: 13px; font-weight: 900; }
