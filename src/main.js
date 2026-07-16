@@ -29,6 +29,7 @@ const BASE_SHEET_HEADERS = [
   '연락처',
   '이메일',
   'ITSK 세계총회 전시투어 참가 희망',
+  '전시투어 기타 의견',
   '전시투어 희망 시간대',
   '제출상태',
 ];
@@ -110,7 +111,7 @@ const RAW_GUIDEBOOK_TEXT = `□ 분야 1. 도로교통운영 및 효율
   - (선제적 재난 골든타임 확보 및 대형사고 예방) 초단기 AI 예측과 지능형 CCTV 모니터링 연동으로 결빙, 침수 위험을 사전에 차단하여 대형 사고 예방
   - (도로·안전 관리의 디지털 전환 및 행정 효율성 제고) 인력의 수동 순찰 및 신고에 의존하던 도로 파손, 낙하물 탐지, 지반침하(싱크홀) 관리를 AI와 데이터 연계로 자동화하여 빠르고 정확한 보수 조치 및 행정 효율 극대화
 
-□ 분야 3. 생활밀착형 교통서비스_민생교통
+□ 분야 3. 생활밀착형 교통서비스 민생교통
 (공영주차 및 주차정보 연계, 불법주정차 관리, DRT, 교통약자 이동지원 등 생활형 교통문제 해결을 위한 기술·서비스 수요 조사)
  ㅇ 추진현황(국정과제 및 정부 보도자료)
   - (국정과제) [국정60] 국민 생활비 부담 경감 / [국정57] 교통혁신 인프라 확충
@@ -256,7 +257,7 @@ const CATEGORY_META = [
     keywords: '사고, 재난, 침수, 낙석, 위험, 응급',
   },
   {
-    category: '분야 3. 생활밀착형 교통서비스_민생교통',
+    category: '분야 3. 생활밀착형 교통서비스 민생교통',
     subcategories: ['공영주차 및 주차정보 연계', '불법주정차 관리', 'DRT', '교통약자 이동지원', 'MaaS', '수요응답형 버스', '스마트 교통복지', '기타'],
     itsTasks: ['⑦ 이용자 맞춤형 통합 모빌리티 서비스', '⑧ 스마트 교통복지 구현'],
     keywords: 'MaaS, DRT, 교통약자, 대중교통, 이동권',
@@ -463,6 +464,11 @@ function renderTourSection() {
         </label>
       </div>
     </div>
+    <label class="field tour-note-field">
+      <span>전시투어 기타 의견</span>
+      <textarea name="docentTourNote" rows="3" placeholder="세계총회 관련 관심 분야를 자유롭게 기재해 주시기 바랍니다.
+(예: 총회 등록, 기술시찰, 참관 희망 전시부스(참가기업) 등)"></textarea>
+    </label>
   `;
 }
 
@@ -1446,6 +1452,7 @@ function collect() {
     surveyStatus: surveyConfig.status,
     ...base,
     docentTour: formValue(form, 'docentTour'),
+    docentTourNote: formValue(form, 'docentTourNote'),
     docentTourSlot: formValue(form, 'docentTourSlot'),
     demands: [...document.querySelectorAll('.demand-card')].map((card) => {
       const i = card.dataset.index;
@@ -1495,6 +1502,7 @@ function baseSheetRowFromPayload(payload, status = '제출') {
     연락처: payload.phone,
     이메일: payload.email,
     'ITSK 세계총회 전시투어 참가 희망': payload.docentTour,
+    '전시투어 기타 의견': payload.docentTourNote,
     '전시투어 희망 시간대': payload.docentTourSlot,
     제출상태: status,
   };

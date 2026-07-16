@@ -724,11 +724,14 @@ button, .secondary.link {
 .hero p {
   max-width: 980px;
 }
+.hero .survey-period-wrap {
+  margin-top: 14px;
+}
 .survey-period {
   display: inline-flex;
   align-items: center;
   min-height: 32px;
-  margin-left: 8px;
+  margin-left: 0;
   padding: 5px 11px;
   border: 1px solid rgba(15, 118, 110, .24);
   border-radius: 999px;
@@ -786,9 +789,34 @@ button, .secondary.link {
 .field-draft-button {
   display: none !important;
 }
+.survey-meta {
+  grid-template-columns: 1.3fr 1fr 1.2fr;
+}
+.tour-note-field {
+  margin-top: 14px;
+}
+.tour-info-table,
+.tour-docent-card,
+.tour-docent-card li,
+.privacy-box,
+.consent,
+.survey-meta strong,
+.section-title p {
+  word-break: keep-all;
+  overflow-wrap: normal;
+}
+.consent {
+  align-items: center;
+  line-height: 1.45;
+}
+.consent input {
+  flex: 0 0 auto;
+  margin: 0;
+}
 
 @media (max-width: 900px) {
-  .tour-info-layout { grid-template-columns: 1fr; }
+  .tour-info-layout,
+  .survey-meta { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 720px) {
