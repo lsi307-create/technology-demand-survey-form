@@ -300,7 +300,7 @@ const DOCENT_TOUR_OPTIONS = ['희망하지 않음', '희망'];
 const DEFAULT_SURVEY_CONFIG = {
   status: '공개',
   publicUrl: 'https://lsi307-create.github.io/technology-demand-survey-form/',
-  notice: '응답 내용은 향후 지자체협의체 회의, 기술상담, ITSK 세계총회 전시투어, 실증사업, 사업화 연계 검토를 위한 기초자료로 활용됩니다. 참가자 여러분들께 소정의 선물을 보내드립니다.',
+  notice: '응답 내용은 향후 지자체협의체 회의, 기술상담, ITSK 세계총회 전시투어, 실증사업, 사업화 연계 검토를 위한 기초자료로 활용됩니다.',
   questions: [
     { id: 'org', group: 'org', label: '기관/단체명', placeholder: '예: OO시청, OO공사, OO협회', type: 'text', required: true, visible: true, help: '응답 기관 또는 단체명을 입력합니다.' },
     { id: 'department', group: 'org', label: '부서명', placeholder: '예: 교통정책과, 스마트도시과', type: 'text', required: true, visible: true, help: '후속 연락 가능한 부서명을 입력합니다.' },
