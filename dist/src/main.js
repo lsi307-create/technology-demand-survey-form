@@ -501,6 +501,20 @@ function cloneConfig(config) {
   return JSON.parse(JSON.stringify(config));
 }
 
+function sanitizeNotice(notice = '') {
+  return String(notice)
+    .replace('참가자 여러분들께 소정의 선물을 보내드립니다.', '')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+}
+
+function normalizeConfig(config) {
+  return {
+    ...config,
+    notice: sanitizeNotice(config.notice || DEFAULT_SURVEY_CONFIG.notice),
+  };
+}
+
 function mergeQuestions(savedQuestions = []) {
   const savedById = new Map(savedQuestions.map((question) => [question.id, question]));
   const merged = DEFAULT_SURVEY_CONFIG.questions.map((question) => ({
@@ -519,14 +533,14 @@ function mergeQuestions(savedQuestions = []) {
 function loadSurveyConfig() {
   try {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
-    if (!saved) return cloneConfig(DEFAULT_SURVEY_CONFIG);
-    return {
+    if (!saved) return normalizeConfig(cloneConfig(DEFAULT_SURVEY_CONFIG));
+    return normalizeConfig({
       ...cloneConfig(DEFAULT_SURVEY_CONFIG),
       ...saved,
       questions: mergeQuestions(saved.questions),
-    };
+    });
   } catch {
-    return cloneConfig(DEFAULT_SURVEY_CONFIG);
+    return normalizeConfig(cloneConfig(DEFAULT_SURVEY_CONFIG));
   }
 }
 
@@ -552,14 +566,14 @@ async function fetchPublishedConfig() {
     const [row] = await res.json();
     if (row?.config) {
       configSource = `원격 발행본 ${row.published_at ? `(${new Date(row.published_at).toLocaleString('ko-KR')})` : ''}`;
-      return row.config;
+      return normalizeConfig(row.config);
     }
   }
 
   const localPublished = JSON.parse(localStorage.getItem(PUBLISHED_CONFIG_KEY) || 'null');
   if (localPublished) {
     configSource = '로컬 발행본';
-    return localPublished;
+    return normalizeConfig(localPublished);
   }
 
   configSource = '기본 템플릿';
@@ -575,6 +589,7 @@ async function loadPublishedConfig() {
         ...published,
         questions: mergeQuestions(published.questions),
       };
+      surveyConfig = normalizeConfig(surveyConfig);
       localStorage.setItem(STORAGE_KEY, JSON.stringify(surveyConfig));
     }
   } catch (error) {
@@ -585,7 +600,7 @@ async function loadPublishedConfig() {
 
 async function publishSurveyConfig() {
   const payload = {
-    ...surveyConfig,
+    ...normalizeConfig(surveyConfig),
     publishedAt: new Date().toISOString(),
   };
 
@@ -628,6 +643,7 @@ function applyIncomingConfig(config, source = '실시간 반영') {
     ...config,
     questions: mergeQuestions(config.questions),
   };
+  surveyConfig = normalizeConfig(surveyConfig);
   configSource = source;
   renderAll();
 }
